@@ -1,6 +1,6 @@
 - 🔭 I’m currently working on [https://www.linkapi.solutions/](https://www.linkapi.solutions/)
 
-- 🌱 I’m currently learning **Typescript, Clean Architecture and DevOps**
+- 🌱 I’m currently learning **Typescript, React, Clean Architecture and DevOps**
 
 - 📫 How to reach me **rogerio.junior20@outlook.com**
 
@@ -26,4 +26,5 @@
   <a href="https://nodejs.org" target="_blank"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" alt="nodejs" width="40" height="40"/> </a> 
   <a href="https://www.postgresql.org" target="_blank"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg" alt="postgresql" width="40" height="40"/> </a> 
   <a href="https://www.typescriptlang.org/" target="_blank"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" alt="typescript" width="40" height="40"/> </a> 
+  <a href="https://www.vim.org/" target="_blank"> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Vimlogo.svg/1200px-Vimlogo.svg.png" alt="vim" width="40" height="40"/> </a>  
 </p>
