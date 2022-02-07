@@ -1,3 +1,5 @@
+# Hi, I’m Rogerio Junior. Welcome to my Github
+
 - 🔭 I’m currently working on [https://www.linkapi.solutions/](https://www.linkapi.solutions/)
 
 - 🌱 I’m currently learning **Typescript, React, Clean Architecture and DevOps**
