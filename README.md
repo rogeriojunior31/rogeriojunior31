@@ -4,7 +4,7 @@
 
 - 📫 How to reach me **rogerio.junior20@outlook.com**
 
-- 📄 Know about my experiences [https://www.linkedin.com/in/rogerioqjunior/] (https://www.linkedin.com/in/rogerioqjunior//)
+- 📄 Know about my experiences [https://www.linkedin.com/in/rogerioqjunior/] (https://www.linkedin.com/in/rogerioqjunior/)
 
 <h3 align="left">Connect with me:</h3>
 <p align="left">
