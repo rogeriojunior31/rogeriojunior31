@@ -1,21 +1,22 @@
-# Welcome to My GitHub! I'm Rogerio Junior 🚀
+# Hello there!👋 I'm a passionate Tech Lead name Rogerio Junior 🙋‍♂️. 
 
-## About Me
-I'm a Tech Lead with a passion for coding and innovation. My expertise lies in JavaScript and Python, where I blend creativity with functionality in my projects. I'm dedicated to leading and inspiring my team to achieve our collective goals in software development.
+## Concerning Me
+I'm an inventive person that loves to code. My greatest skill is creating wonderful stuff with JavaScript and Python by fusing functionality and creativity. My main focus is on motivating and guiding my team to accomplish our common software development objectives. We push the envelope of what's feasible together!
 
 🔭 **Currently Leading Projects At:** [Samsung SDS Latin America](https://www.linkedin.com/company/samsungsdsla/)
 
 🌱 **Expanding My Skills In:** IA, Machine Learning, Deep Learning, Clean Architecture, and Advanced JavaScript & Python Techniques
 
-📫 **Contact Me:** [rogerio.junior20@outlook.com](rogerio.junior20@outlook.com)
+📄 **My career journey Visit [LinkedIn](https://www.linkedin.com/in/rogerioqjunior/) to view my career highlights:** 
 
-📄 **Professional Journey:** [LinkedIn](https://www.linkedin.com/in/rogerioqjunior/)
-
-## Technical Skills and Tools
-- JavaScript - Python - Node.js - Bun.js - Typescript
-- MongoDb - Redis - Elastic Stack - Amazon Aws - Azure
-- Machine Learning, Deep Leaning, Generative Ia
-
+🛠️ **My Tech Toolkit**
+- *Programing Languages*: JavaScript, Python, TypeScript
+- *Frameworks & Libraries*: Node.js, Bun.js, Pandas, Torch, NestJS, Langchain, LlamaIndex
+- *Databases*: MongoDB, Redis, MySQL
+- *Cloud Platforms*: Amazon AWS, Microsoft Azure
+- *Data Analysis & Visualization*: Elastic Stack
+- *AI & Machine Learning*: Machine Learning, Deep Learning, Fine Tuning Models, Prompt Engineering, Generative AI
 
 ## Connect with Me
+- [Email](rogerio.junior20@outlook.com)
 - [LinkedIn](https://www.linkedin.com/in/rogerioqjunior/)
