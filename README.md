@@ -1,4 +1,4 @@
-# Hello there!👋 I'm a passionate Tech Lead name Rogerio Junior 🙋‍♂️. 
+# Hello there!👋 I'm a passionate Tech Lead named Rogerio Junior 🙋‍♂️. 
 
 ## Concerning Me
 I'm an inventive person that loves to code. My greatest skill is creating wonderful stuff with JavaScript and Python by fusing functionality and creativity. My main focus is on motivating and guiding my team to accomplish our common software development objectives. We push the envelope of what's feasible together!
