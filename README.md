@@ -2,7 +2,7 @@
 
 <br>
 
-> Tech Lead and Backend Specialist, fueled by the collaborative energy of the open-source world. I thrive in the Linux terminal, turning complex challenges into elegant, automated solutions with **JavaScript** and **Python**. For me, coding is about more than just logic; it’s about the freedom to build, innovate, and share knowledge within a global community[.
+> Tech Lead and Backend Specialist, fueled by the collaborative energy of the open-source world. I thrive in the Linux terminal, turning complex challenges into elegant, automated solutions with **JavaScript** and **Python**. For me, coding is about more than just logic, it’s about the freedom to build, innovate, and share knowledge within a global community.
 
 <br>
 
