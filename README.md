@@ -1,22 +1,26 @@
-# Hello there!👋 I'm a passionate Tech Lead named Rogerio Junior 🙋‍♂️. 
+# Rogério Junior | Tech Lead & Backend Specialist
 
-## Concerning Me
-I'm an inventive person that loves to code. My greatest skill is creating wonderful stuff with JavaScript and Python by fusing functionality and creativity. My main focus is on motivating and guiding my team to accomplish our common software development objectives. We push the envelope of what's feasible together!
+<br>
 
-🔭 **Currently Leading Projects At:** [Samsung SDS Latin America](https://www.linkedin.com/company/samsungsdsla/)
+> Tech Lead and Backend Specialist, fueled by the collaborative energy of the open-source world[web:79]. I thrive in the Linux terminal[memory:59][memory:69], turning complex challenges into elegant, automated solutions with **JavaScript** and **Python**. For me, coding is about more than just logic; it’s about the freedom to build, innovate, and share knowledge within a global community[web:75][web:81].
 
-🌱 **Expanding My Skills In:** IA, Machine Learning, Deep Learning, Clean Architecture, and Advanced JavaScript & Python Techniques
+<br>
 
-📄 **My career journey Visit [LinkedIn](https://www.linkedin.com/in/rogerioqjunior/) to view my career highlights:** 
+<p align="center">
+  <a href="https://www.linkedin.com/in/rogerioqjunior/"><strong>LinkedIn</strong></a> ·
+  <a href="mailto:rogerio.junior20@outlook.com"><strong>Email</strong></a> ·
+  <span>Currently @ <a href="https://www.linkedin.com/company/samsungsdsla/"><strong>Samsung SDS</strong></a></span>
+</p>
 
-🛠️ **My Tech Toolkit**
-- *Programing Languages*: JavaScript, Python, TypeScript
-- *Frameworks & Libraries*: Node.js, Bun.js, Pandas, Torch, NestJS, Langchain, LlamaIndex
-- *Databases*: MongoDB, Redis, MySQL
-- *Cloud Platforms*: Amazon AWS, Microsoft Azure
-- *Data Analysis & Visualization*: Elastic Stack
-- *AI & Machine Learning*: Machine Learning, Deep Learning, Fine Tuning Models, Prompt Engineering, Generative AI
+---
 
-## Connect with Me
-- [Email](rogerio.junior20@outlook.com)
-- [LinkedIn](https://www.linkedin.com/in/rogerioqjunior/)
+### 🛠️ My Tech Stack
+
+| Category | Technologies |
+| :--- | :--- |
+| **Languages** | `JavaScript` `TypeScript` `Python` `Shell` |
+| **Platforms & Runtimes** | `Node.js` `Bun.js` `Docker` `NestJS` |
+| **Databases** | `MongoDB` `Redis` `MySQL` `PostgreSQL` |
+| **Cloud & DevOps** | `Amazon AWS` `Microsoft Azure` `Elastic Stack` `GitHub Actions`|
+| **AI & Machine Learning** | `LangChain` `LlamaIndex` `PyTorch` `Fine-Tuning` `Generative AI` |
+
