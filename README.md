@@ -9,7 +9,7 @@
 <p align="center">
   <a href="https://www.linkedin.com/in/rogerioqjunior/"><strong>LinkedIn</strong></a> ·
   <a href="mailto:rogerio.junior20@outlook.com"><strong>Email</strong></a> ·
-  <span>Currently @ <a href="https://www.linkedin.com/company/samsungsdsla/"><strong>Samsung SDS</strong></a></span>
+  <span>Currently @ <a href="https://www.linkedin.com/company/kruzerio/"><strong>Kruzer IO</strong></a></span>
 </p>
 
 ---
