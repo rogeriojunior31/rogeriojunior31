@@ -19,7 +19,7 @@
 ### `> github --stats`
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=rogeriojunior31&show_icons=true&hide_border=true&bg_color=1a1b26&title_color=7aa2f7&icon_color=bb9af7&text_color=a9b1d6&ring_color=7aa2f7" alt="GitHub Stats" height="165"/>
+  <img src="https://github-readme-stats.vercel.app/api?username=rogeriojunior31&show_icons=true&hide_border=true&include_all_commits=true&count_private=true&bg_color=1a1b26&title_color=7aa2f7&icon_color=bb9af7&text_color=a9b1d6&ring_color=7aa2f7" alt="GitHub Stats" height="165"/>
   &nbsp;
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=rogeriojunior31&layout=compact&hide_border=true&bg_color=1a1b26&title_color=7aa2f7&text_color=a9b1d6" alt="Top Languages" height="165"/>
 </p>
