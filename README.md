@@ -1,26 +1,51 @@
-# Rogério Junior | Tech Lead & Backend Specialist
-
-<br>
-
-> Tech Lead and Backend Specialist, fueled by the collaborative energy of the open-source world. I thrive in the Linux terminal, turning complex challenges into elegant, automated solutions with **JavaScript** and **Python**. For me, coding is about more than just logic, it’s about the freedom to build, innovate, and share knowledge within a global community.
-
-<br>
+<p align="center">
+  <img src="header.svg" alt="Zellij Terminal - Rogério Junior" width="860"/>
+</p>
 
 <p align="center">
-  <a href="https://www.linkedin.com/in/rogerioqjunior/"><strong>LinkedIn</strong></a> ·
-  <a href="mailto:rogerio.junior20@outlook.com"><strong>Email</strong></a> ·
-  <span>Currently @ <a href="https://www.linkedin.com/company/kruzerio/"><strong>Kruzer IO</strong></a></span>
+  <a href="https://www.linkedin.com/in/rogerioqjunior/">
+    <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
+  </a>&nbsp;
+  <a href="mailto:rogerio.junior20@outlook.com">
+    <img src="https://img.shields.io/badge/Email-1a1b26?style=for-the-badge&logo=maildotru&logoColor=7aa2f7" alt="Email"/>
+  </a>&nbsp;
+  <a href="https://www.kaggle.com/maskara31">
+    <img src="https://img.shields.io/badge/Kaggle-1a1b26?style=for-the-badge&logo=kaggle&logoColor=20BEFF" alt="Kaggle"/>
+  </a>&nbsp;
+  <a href="https://www.linkedin.com/company/kruzerio/">
+    <img src="https://img.shields.io/badge/@ Kruzer IO-1a1b26?style=for-the-badge&logoColor=9ece6a" alt="Kruzer IO"/>
+  </a>
 </p>
 
 ---
 
-### 🛠️ My Tech Stack
+### `> github --stats`
 
-| Category | Technologies |
-| :--- | :--- |
-| **Languages** | `JavaScript` `TypeScript` `Python` `Shell` |
-| **Platforms & Runtimes** | `Node.js` `Bun.js` `Docker` `NestJS` |
-| **Databases** | `MongoDB` `Redis` `MySQL` `PostgreSQL` |
-| **Cloud & DevOps** | `Amazon AWS` `Microsoft Azure` `Elastic Stack` `GitHub Actions`|
-| **AI & Machine Learning** | `LangChain` `LlamaIndex` `PyTorch` `Fine-Tuning` `Generative AI` |
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=rogeriojunior31&show_icons=true&hide_border=true&bg_color=1a1b26&title_color=7aa2f7&icon_color=bb9af7&text_color=a9b1d6&ring_color=7aa2f7" alt="GitHub Stats" height="165"/>
+  &nbsp;
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=rogeriojunior31&layout=compact&hide_border=true&bg_color=1a1b26&title_color=7aa2f7&text_color=a9b1d6" alt="Top Languages" height="165"/>
+</p>
 
+<p align="center">
+  <img src="https://github-readme-streak-stats.herokuapp.com?user=rogeriojunior31&hide_border=true&background=1a1b26&stroke=29384b&ring=7aa2f7&fire=f7768e&currStreakNum=a9b1d6&sideNums=a9b1d6&currStreakLabel=7aa2f7&sideLabels=565f89&dates=565f89" alt="GitHub Streak" width="520"/>
+</p>
+
+---
+
+### `> cat /etc/profiles/gaming.conf`
+
+<p align="center">
+  <a href="https://steamcommunity.com/id/melvindoooo/">
+    <img src="https://img.shields.io/badge/Steam-melvindoooo-1a1b26?style=for-the-badge&logo=steam&logoColor=c0caf5" alt="Steam"/>
+  </a>&nbsp;
+  <a href="https://retroachievements.org/user/Doggy31">
+    <img src="https://img.shields.io/badge/RetroAchievements-Doggy31-1a1b26?style=for-the-badge&logo=retroarch&logoColor=e0af68" alt="RetroAchievements"/>
+  </a>
+</p>
+
+---
+
+<p align="center">
+  <img src="https://komarev.com/ghpvc/?username=rogeriojunior31&color=7aa2f7&style=flat-square&label=profile+views" alt="Profile views"/>
+</p>
