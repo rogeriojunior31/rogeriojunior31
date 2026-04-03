@@ -4,16 +4,16 @@
 
 <p align="center">
   <a href="https://www.linkedin.com/in/rogerioqjunior/">
-    <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
+    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
   </a>&nbsp;
   <a href="mailto:rogerio.junior20@outlook.com">
-    <img src="https://img.shields.io/badge/Email-1a1b26?style=for-the-badge&logo=maildotru&logoColor=7aa2f7" alt="Email"/>
+    <img src="https://img.shields.io/badge/Outlook-0078D4?style=for-the-badge&logo=microsoftoutlook&logoColor=white" alt="Email"/>
   </a>&nbsp;
   <a href="https://www.kaggle.com/maskara31">
-    <img src="https://img.shields.io/badge/Kaggle-1a1b26?style=for-the-badge&logo=kaggle&logoColor=20BEFF" alt="Kaggle"/>
+    <img src="https://img.shields.io/badge/Kaggle-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white" alt="Kaggle"/>
   </a>&nbsp;
   <a href="https://www.linkedin.com/company/kruzerio/">
-    <img src="https://img.shields.io/badge/@ Kruzer IO-1a1b26?style=for-the-badge&logoColor=9ece6a" alt="Kruzer IO"/>
+    <img src="https://img.shields.io/badge/Kruzer_IO-9ece6a?style=for-the-badge&logo=buildkite&logoColor=1a1b26" alt="Kruzer IO"/>
   </a>
 </p>
 
@@ -37,10 +37,10 @@
 
 <p align="center">
   <a href="https://steamcommunity.com/id/melvindoooo/">
-    <img src="https://img.shields.io/badge/Steam-melvindoooo-1a1b26?style=for-the-badge&logo=steam&logoColor=c0caf5" alt="Steam"/>
+    <img src="https://img.shields.io/badge/Steam-000000?style=for-the-badge&logo=steam&logoColor=white" alt="Steam"/>
   </a>&nbsp;
   <a href="https://retroachievements.org/user/Doggy31">
-    <img src="https://img.shields.io/badge/RetroAchievements-Doggy31-1a1b26?style=for-the-badge&logo=retroarch&logoColor=e0af68" alt="RetroAchievements"/>
+    <img src="https://img.shields.io/badge/RetroAchievements-cc9900?style=for-the-badge&logo=retroachievements&logoColor=white" alt="RetroAchievements"/>
   </a>
 </p>
 

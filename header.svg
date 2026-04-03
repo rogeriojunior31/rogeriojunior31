@@ -10,6 +10,11 @@
         50% { opacity: 0; }
       }
 
+      @keyframes glowPulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+
       @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
@@ -20,13 +25,78 @@
         to { opacity: 1; transform: translateY(0); }
       }
 
-      @keyframes glowPulse {
-        0%, 100% { opacity: 0.6; }
-        50% { opacity: 1; }
+      /* Tab cycling: 3 tabs, 5s each = 15s total cycle */
+      /* Tab 1: 0%-33%, Tab 2: 33%-66%, Tab 3: 66%-100% */
+      @keyframes tabCycle1 {
+        0%, 30% { opacity: 1; }
+        33%, 97% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+      @keyframes tabCycle2 {
+        0%, 30% { opacity: 0; }
+        33%, 63% { opacity: 1; }
+        66%, 100% { opacity: 0; }
+      }
+      @keyframes tabCycle3 {
+        0%, 63% { opacity: 0; }
+        66%, 97% { opacity: 1; }
+        100% { opacity: 0; }
+      }
+
+      /* Tab highlight animations */
+      @keyframes tabHL1 {
+        0%, 30% { fill: #7aa2f7; opacity: 0.2; }
+        33%, 97% { fill: #16161e; opacity: 1; }
+        100% { fill: #7aa2f7; opacity: 0.2; }
+      }
+      @keyframes tabHL2 {
+        0%, 30% { fill: #16161e; opacity: 1; }
+        33%, 63% { fill: #7aa2f7; opacity: 0.2; }
+        66%, 100% { fill: #16161e; opacity: 1; }
+      }
+      @keyframes tabHL3 {
+        0%, 63% { fill: #16161e; opacity: 1; }
+        66%, 97% { fill: #7aa2f7; opacity: 0.2; }
+        100% { fill: #16161e; opacity: 1; }
+      }
+
+      /* Tab text color animations */
+      @keyframes tabText1 {
+        0%, 30% { fill: #7aa2f7; }
+        33%, 97% { fill: #565f89; }
+        100% { fill: #7aa2f7; }
+      }
+      @keyframes tabText2 {
+        0%, 30% { fill: #565f89; }
+        33%, 63% { fill: #7aa2f7; }
+        66%, 100% { fill: #565f89; }
+      }
+      @keyframes tabText3 {
+        0%, 63% { fill: #565f89; }
+        66%, 97% { fill: #7aa2f7; }
+        100% { fill: #565f89; }
+      }
+
+      /* Tab number color */
+      @keyframes tabNum1 {
+        0%, 30% { fill: #7aa2f7; }
+        33%, 97% { fill: #3b4261; }
+        100% { fill: #7aa2f7; }
+      }
+      @keyframes tabNum2 {
+        0%, 30% { fill: #3b4261; }
+        33%, 63% { fill: #7aa2f7; }
+        66%, 100% { fill: #3b4261; }
+      }
+      @keyframes tabNum3 {
+        0%, 63% { fill: #3b4261; }
+        66%, 97% { fill: #7aa2f7; }
+        100% { fill: #3b4261; }
       }
 
       .cursor { animation: blink 1s step-end infinite; }
       .glow { animation: glowPulse 2s ease-in-out infinite; }
+      .bar { animation: fadeIn 0.4s ease-out 0.1s both; }
 
       .d1 { animation: slideIn 0.3s ease-out 0.3s both; }
       .d2 { animation: slideIn 0.3s ease-out 0.5s both; }
@@ -41,12 +111,23 @@
       .d11 { animation: slideIn 0.3s ease-out 2.3s both; }
       .d12 { animation: slideIn 0.3s ease-out 2.5s both; }
       .d13 { animation: slideIn 0.3s ease-out 2.7s both; }
-      .d14 { animation: slideIn 0.3s ease-out 2.9s both; }
-      .d15 { animation: slideIn 0.3s ease-out 3.1s both; }
-      .d16 { animation: slideIn 0.3s ease-out 3.3s both; }
-      .d17 { animation: slideIn 0.3s ease-out 3.5s both; }
 
-      .bar { animation: fadeIn 0.4s ease-out 0.1s both; }
+      /* Content panels */
+      .panel1 { animation: tabCycle1 15s ease-in-out infinite; }
+      .panel2 { animation: tabCycle2 15s ease-in-out infinite; }
+      .panel3 { animation: tabCycle3 15s ease-in-out infinite; }
+
+      /* Tab highlight rects */
+      .tab-bg-1 { animation: tabHL1 15s ease-in-out infinite; }
+      .tab-bg-2 { animation: tabHL2 15s ease-in-out infinite; }
+      .tab-bg-3 { animation: tabHL3 15s ease-in-out infinite; }
+
+      .tab-text-1 { animation: tabText1 15s ease-in-out infinite; }
+      .tab-text-2 { animation: tabText2 15s ease-in-out infinite; }
+      .tab-text-3 { animation: tabText3 15s ease-in-out infinite; }
+      .tab-num-1 { animation: tabNum1 15s ease-in-out infinite; }
+      .tab-num-2 { animation: tabNum2 15s ease-in-out infinite; }
+      .tab-num-3 { animation: tabNum3 15s ease-in-out infinite; }
     </style>
   </defs>
 
@@ -63,311 +144,366 @@
   <text x="57" y="17" font-size="11" fill="#9ece6a" class="bar">rogerio</text>
   <text x="107" y="17" font-size="11" fill="#3b4261" class="bar">)</text>
 
-  <!-- Tab 1: about (active) — powerline style -->
-  <rect x="130" y="3" width="90" height="20" rx="2" ry="2" fill="#7aa2f7" opacity="0.2" class="bar"/>
-  <text x="135" y="17" font-size="10.5" class="bar">
-    <tspan fill="#7aa2f7" font-weight="bold">1</tspan>
+  <!-- Tab 1: about -->
+  <rect x="130" y="3" width="90" height="20" rx="2" ry="2" class="tab-bg-1"/>
+  <text x="135" y="17" font-size="10.5">
+    <tspan class="tab-num-1" font-weight="bold">1</tspan>
     <tspan fill="#3b4261"> </tspan>
-    <tspan fill="#7aa2f7" font-weight="bold">about</tspan>
-    <tspan fill="#7aa2f7" dx="4"></tspan>
+    <tspan class="tab-text-1" font-weight="bold">about</tspan>
   </text>
 
-  <!-- Tab 2: stack (inactive) -->
-  <rect x="228" y="3" width="90" height="20" rx="2" ry="2" fill="#16161e" class="bar"/>
-  <text x="233" y="17" font-size="10.5" class="bar">
-    <tspan fill="#3b4261">2</tspan>
+  <!-- Tab 2: stack -->
+  <rect x="228" y="3" width="90" height="20" rx="2" ry="2" class="tab-bg-2"/>
+  <text x="233" y="17" font-size="10.5">
+    <tspan class="tab-num-2" font-weight="bold">2</tspan>
     <tspan fill="#3b4261"> </tspan>
-    <tspan fill="#565f89">stack</tspan>
-    <tspan fill="#3b4261" dx="4"></tspan>
+    <tspan class="tab-text-2" font-weight="bold">stack</tspan>
   </text>
 
-  <!-- Tab 3: links (inactive) -->
-  <rect x="326" y="3" width="90" height="20" rx="2" ry="2" fill="#16161e" class="bar"/>
-  <text x="331" y="17" font-size="10.5" class="bar">
-    <tspan fill="#3b4261">3</tspan>
+  <!-- Tab 3: links -->
+  <rect x="326" y="3" width="90" height="20" rx="2" ry="2" class="tab-bg-3"/>
+  <text x="331" y="17" font-size="10.5">
+    <tspan class="tab-num-3" font-weight="bold">3</tspan>
     <tspan fill="#3b4261"> </tspan>
-    <tspan fill="#565f89">links</tspan>
-    <tspan fill="#3b4261" dx="4"></tspan>
+    <tspan class="tab-text-3" font-weight="bold">links</tspan>
   </text>
 
-  <!-- ============ LEFT PANE FRAME (focused — green border) ============ -->
-  <!-- Rounded corners with box-drawing chars -->
-  <text x="8" y="42" font-size="11" fill="#9ece6a">╭</text>
-  <text x="8" y="410" font-size="11" fill="#9ece6a">╰</text>
-  <text x="423" y="42" font-size="11" fill="#9ece6a">╮</text>
-  <text x="423" y="410" font-size="11" fill="#9ece6a">╯</text>
+  <!-- ============================================================ -->
+  <!-- ============ PANEL 1: about (fastfetch + tech stack) ======= -->
+  <!-- ============================================================ -->
+  <g class="panel1">
 
-  <!-- Top border with title -->
-  <line x1="18" y1="35" x2="148" y2="35" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
-  <text x="150" y="39" font-size="10" fill="#9ece6a"> fastfetch </text>
-  <line x1="228" y1="35" x2="422" y2="35" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <!-- LEFT PANE FRAME (focused — green border) -->
+    <text x="8" y="42" font-size="11" fill="#9ece6a">╭</text>
+    <text x="8" y="407" font-size="11" fill="#9ece6a">╰</text>
+    <text x="423" y="42" font-size="11" fill="#9ece6a">╮</text>
+    <text x="423" y="407" font-size="11" fill="#9ece6a">╯</text>
+    <line x1="18" y1="35" x2="148" y2="35" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <text x="150" y="39" font-size="10" fill="#9ece6a"> fastfetch </text>
+    <line x1="228" y1="35" x2="422" y2="35" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <line x1="18" y1="404" x2="422" y2="404" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <line x1="12" y1="42" x2="12" y2="402" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <line x1="427" y1="42" x2="427" y2="402" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
 
-  <!-- Bottom border -->
-  <line x1="18" y1="407" x2="422" y2="407" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <!-- RIGHT PANE FRAME (unfocused — gray border) -->
+    <text x="433" y="42" font-size="11" fill="#3b4261">╭</text>
+    <text x="433" y="407" font-size="11" fill="#3b4261">╰</text>
+    <text x="847" y="42" font-size="11" fill="#3b4261">╮</text>
+    <text x="847" y="407" font-size="11" fill="#3b4261">╯</text>
+    <line x1="443" y1="35" x2="568" y2="35" stroke="#3b4261" stroke-width="1"/>
+    <text x="570" y="39" font-size="10" fill="#565f89"> tech stack </text>
+    <line x1="660" y1="35" x2="846" y2="35" stroke="#3b4261" stroke-width="1"/>
+    <line x1="443" y1="404" x2="846" y2="404" stroke="#3b4261" stroke-width="1"/>
+    <line x1="437" y1="42" x2="437" y2="402" stroke="#3b4261" stroke-width="1"/>
+    <line x1="849" y1="42" x2="849" y2="402" stroke="#3b4261" stroke-width="1"/>
 
-  <!-- Left border -->
-  <line x1="12" y1="42" x2="12" y2="405" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
-  <!-- Right border -->
-  <line x1="427" y1="42" x2="427" y2="405" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <!-- Arch Linux ASCII Art (official neofetch/fastfetch) -->
+    <text x="22" y="62" font-size="9.5" fill="#7aa2f7" xml:space="preserve">                  -`                </text>
+    <text x="22" y="76" font-size="9.5" fill="#7aa2f7" xml:space="preserve">                 .o+`               </text>
+    <text x="22" y="90" font-size="9.5" fill="#7aa2f7" xml:space="preserve">                `ooo/               </text>
+    <text x="22" y="104" font-size="9.5" fill="#7aa2f7" xml:space="preserve">               `+oooo:              </text>
+    <text x="22" y="118" font-size="9.5" fill="#7aa2f7" xml:space="preserve">              `+oooooo:             </text>
+    <text x="22" y="132" font-size="9.5" fill="#7aa2f7" xml:space="preserve">              -+oooooo+:            </text>
+    <text x="22" y="146" font-size="9.5" fill="#7aa2f7" xml:space="preserve">            `/:-:++oooo+:           </text>
+    <text x="22" y="160" font-size="9.5" fill="#7aa2f7" xml:space="preserve">           `/++++/+++++++:          </text>
+    <text x="22" y="174" font-size="9.5" fill="#7aa2f7" xml:space="preserve">          `/++++++++++++++:         </text>
+    <text x="22" y="188" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">         `/+++</tspan><tspan fill="#7dcfff">ooooooooooooo/`</tspan></text>
+    <text x="22" y="202" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">        ./ooo</tspan><tspan fill="#7dcfff">sssso++osssssso+`</tspan></text>
+    <text x="22" y="216" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">       .oossssso</tspan><tspan fill="#7dcfff">-````/ossssss+`</tspan></text>
+    <text x="22" y="230" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">      -osssssso.</tspan><tspan fill="#7dcfff">      :ssssssso.</tspan></text>
+    <text x="22" y="244" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">     :osssssss/</tspan><tspan fill="#7dcfff">        osssso+++.</tspan></text>
+    <text x="22" y="258" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">    /ossssssss/</tspan><tspan fill="#7dcfff">        +ssssooo/-</tspan></text>
+    <text x="22" y="272" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">  `/ossssso+/:-</tspan><tspan fill="#7dcfff">        -:/+osssso+-</tspan></text>
+    <text x="22" y="286" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7"> `+sso+:-`</tspan><tspan fill="#7dcfff">                 `.-/+oso:</tspan></text>
+    <text x="22" y="300" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7"> `++:.</tspan><tspan fill="#7dcfff">                           `-/+/</tspan></text>
+    <text x="22" y="314" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7"> .`</tspan><tspan fill="#7dcfff">                                 `/</tspan></text>
 
-  <!-- ============ RIGHT PANE FRAME (unfocused — gray border) ============ -->
-  <text x="433" y="42" font-size="11" fill="#3b4261">╭</text>
-  <text x="433" y="410" font-size="11" fill="#3b4261">╰</text>
-  <text x="847" y="42" font-size="11" fill="#3b4261">╮</text>
-  <text x="847" y="410" font-size="11" fill="#3b4261">╯</text>
-
-  <!-- Top border with title -->
-  <line x1="443" y1="35" x2="568" y2="35" stroke="#3b4261" stroke-width="1"/>
-  <text x="570" y="39" font-size="10" fill="#565f89"> tech stack </text>
-  <line x1="660" y1="35" x2="846" y2="35" stroke="#3b4261" stroke-width="1"/>
-
-  <!-- Bottom border -->
-  <line x1="443" y1="407" x2="846" y2="407" stroke="#3b4261" stroke-width="1"/>
-
-  <!-- Left border -->
-  <line x1="437" y1="42" x2="437" y2="405" stroke="#3b4261" stroke-width="1"/>
-  <!-- Right border -->
-  <line x1="851" y1="42" x2="851" y2="405" stroke="#3b4261" stroke-width="1"/>
-
-  <!-- ============ LEFT PANE: Fastfetch ============ -->
-
-  <!-- Arch Linux ASCII Art (compact) -->
-  <g class="d1">
-    <text x="40" y="78" font-size="13" fill="#7aa2f7" xml:space="preserve">       /\       </text>
-  </g>
-  <g class="d2">
-    <text x="40" y="94" font-size="13" fill="#7aa2f7" xml:space="preserve">      /  \      </text>
-  </g>
-  <g class="d3">
-    <text x="40" y="110" font-size="13" fill="#7aa2f7" xml:space="preserve">     /\   \     </text>
-  </g>
-  <g class="d4">
-    <text x="40" y="126" font-size="13" fill="#7aa2f7" xml:space="preserve">    /  &gt;  \    </text>
-  </g>
-  <g class="d5">
-    <text x="40" y="142" font-size="13" fill="#7aa2f7" xml:space="preserve">   /  /.   \   </text>
-  </g>
-  <g class="d6">
-    <text x="40" y="158" font-size="13" fill="#7aa2f7" xml:space="preserve">  /  /` `  \  </text>
-  </g>
-  <g class="d7">
-    <text x="40" y="174" font-size="13" fill="#7aa2f7" xml:space="preserve"> /  /   .   \ </text>
-  </g>
-  <g class="d8">
-    <text x="40" y="190" font-size="13" fill="#7aa2f7" xml:space="preserve">/..|_____|..\</text>
-  </g>
-
-  <!-- Fastfetch info (right of logo) -->
-  <g class="d1">
-    <text x="200" y="78" font-size="11.5">
+    <!-- Fastfetch info (right side) -->
+    <text x="230" y="62" font-size="10.5">
       <tspan fill="#bb9af7" font-weight="bold">rogerio</tspan><tspan fill="#565f89">@</tspan><tspan fill="#7aa2f7" font-weight="bold">archlinux</tspan>
     </text>
-  </g>
-  <g class="d2">
-    <text x="200" y="94" font-size="11.5" fill="#29384b">───────────────────</text>
-  </g>
-  <g class="d3">
-    <text x="200" y="112" font-size="11">
+    <text x="230" y="78" font-size="10.5" fill="#29384b">──────────────────────</text>
+    <text x="230" y="96" font-size="10.5">
       <tspan fill="#7aa2f7" font-weight="bold">Name   </tspan><tspan fill="#565f89"> ~ </tspan><tspan fill="#a9b1d6">Rogério Junior</tspan>
     </text>
-  </g>
-  <g class="d4">
-    <text x="200" y="129" font-size="11">
+    <text x="230" y="112" font-size="10.5">
       <tspan fill="#7aa2f7" font-weight="bold">Role   </tspan><tspan fill="#565f89"> ~ </tspan><tspan fill="#a9b1d6">Tech Lead</tspan>
     </text>
-  </g>
-  <g class="d5">
-    <text x="200" y="146" font-size="11">
+    <text x="230" y="128" font-size="10.5">
       <tspan fill="#7aa2f7" font-weight="bold">Company</tspan><tspan fill="#565f89"> ~ </tspan><tspan fill="#9ece6a">Kruzer IO</tspan>
     </text>
-  </g>
-  <g class="d6">
-    <text x="200" y="163" font-size="11">
+    <text x="230" y="144" font-size="10.5">
       <tspan fill="#7aa2f7" font-weight="bold">XP     </tspan><tspan fill="#565f89"> ~ </tspan><tspan fill="#a9b1d6">6+ years</tspan>
     </text>
-  </g>
-  <g class="d7">
-    <text x="200" y="180" font-size="11">
+    <text x="230" y="160" font-size="10.5">
       <tspan fill="#7aa2f7" font-weight="bold">OS     </tspan><tspan fill="#565f89"> ~ </tspan><tspan fill="#a9b1d6">Arch Linux x86_64</tspan>
     </text>
-  </g>
-  <g class="d8">
-    <text x="200" y="197" font-size="11">
+    <text x="230" y="176" font-size="10.5">
       <tspan fill="#7aa2f7" font-weight="bold">Shell  </tspan><tspan fill="#565f89"> ~ </tspan><tspan fill="#a9b1d6">fish</tspan>
     </text>
-  </g>
-  <g class="d9">
-    <text x="200" y="214" font-size="11">
+    <text x="230" y="192" font-size="10.5">
       <tspan fill="#7aa2f7" font-weight="bold">WM     </tspan><tspan fill="#565f89"> ~ </tspan><tspan fill="#a9b1d6">Zellij</tspan>
     </text>
-  </g>
-  <g class="d10">
-    <text x="200" y="231" font-size="11">
+    <text x="230" y="208" font-size="10.5">
       <tspan fill="#7aa2f7" font-weight="bold">Theme  </tspan><tspan fill="#565f89"> ~ </tspan><tspan fill="#bb9af7">Tokyo Night</tspan>
+    </text>
+
+    <!-- Color palette -->
+    <text x="230" y="230" font-size="10.5" fill="#29384b">──────────────────────</text>
+    <circle cx="236" cy="248" r="6" fill="#f7768e"/>
+    <circle cx="254" cy="248" r="6" fill="#9ece6a"/>
+    <circle cx="272" cy="248" r="6" fill="#e0af68"/>
+    <circle cx="290" cy="248" r="6" fill="#7aa2f7"/>
+    <circle cx="308" cy="248" r="6" fill="#bb9af7"/>
+    <circle cx="326" cy="248" r="6" fill="#7dcfff"/>
+    <circle cx="344" cy="248" r="6" fill="#c0caf5"/>
+    <circle cx="362" cy="248" r="6" fill="#414868"/>
+
+    <!-- Prompt -->
+    <text x="30" y="350" font-size="11">
+      <tspan fill="#565f89">~</tspan>
+      <tspan fill="#9ece6a"> ❯ </tspan>
+      <tspan fill="#a9b1d6" class="cursor">▌</tspan>
+    </text>
+
+    <!-- RIGHT PANE: Tech Stack -->
+    <text x="458" y="68" font-size="10.5">
+      <tspan fill="#bb9af7" font-weight="bold">  Languages</tspan>
+    </text>
+    <text x="458" y="86" font-size="10.5">
+      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#e0af68">JavaScript</tspan>
+      <tspan fill="#3b4261"> · </tspan><tspan fill="#7aa2f7">TypeScript</tspan>
+    </text>
+    <text x="458" y="102" font-size="10.5">
+      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#9ece6a">Python</tspan>
+      <tspan fill="#3b4261"> · </tspan><tspan fill="#7dcfff">Go</tspan>
+    </text>
+    <text x="458" y="118" font-size="10.5">
+      <tspan fill="#3b4261">  └─ </tspan><tspan fill="#c0caf5">Shell / Bash</tspan>
+    </text>
+
+    <text x="458" y="148" font-size="10.5">
+      <tspan fill="#bb9af7" font-weight="bold">  Platforms &amp; Runtime</tspan>
+    </text>
+    <text x="458" y="166" font-size="10.5">
+      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#a9b1d6">Node.js</tspan>
+      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">Bun</tspan>
+      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">NestJS</tspan>
+    </text>
+    <text x="458" y="182" font-size="10.5">
+      <tspan fill="#3b4261">  └─ </tspan><tspan fill="#a9b1d6">Docker</tspan>
+    </text>
+
+    <text x="458" y="212" font-size="10.5">
+      <tspan fill="#bb9af7" font-weight="bold">  Cloud &amp; DevOps</tspan>
+    </text>
+    <text x="458" y="230" font-size="10.5">
+      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#a9b1d6">AWS</tspan>
+      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">Azure</tspan>
+    </text>
+    <text x="458" y="246" font-size="10.5">
+      <tspan fill="#3b4261">  └─ </tspan><tspan fill="#a9b1d6">Elastic Stack</tspan>
+      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">GitHub Actions</tspan>
+    </text>
+
+    <text x="458" y="276" font-size="10.5">
+      <tspan fill="#bb9af7" font-weight="bold">  AI &amp; Machine Learning</tspan>
+    </text>
+    <text x="458" y="294" font-size="10.5">
+      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#a9b1d6">LangChain</tspan>
+      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">LlamaIndex</tspan>
+    </text>
+    <text x="458" y="310" font-size="10.5">
+      <tspan fill="#3b4261">  └─ </tspan><tspan fill="#a9b1d6">PyTorch</tspan>
+      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">Fine-Tuning</tspan>
+    </text>
+
+    <text x="458" y="340" font-size="10.5">
+      <tspan fill="#bb9af7" font-weight="bold">  Databases</tspan>
+    </text>
+    <text x="458" y="358" font-size="10.5">
+      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#a9b1d6">MongoDB</tspan>
+      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">Redis</tspan>
+    </text>
+    <text x="458" y="374" font-size="10.5">
+      <tspan fill="#3b4261">  └─ </tspan><tspan fill="#a9b1d6">PostgreSQL</tspan>
+      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">MySQL</tspan>
     </text>
   </g>
 
-  <!-- Color palette -->
-  <g class="d11">
-    <text x="200" y="252" font-size="11" fill="#29384b">───────────────────</text>
-  </g>
-  <g class="d12">
-    <circle cx="206" cy="270" r="6" fill="#f7768e"/>
-    <circle cx="224" cy="270" r="6" fill="#9ece6a"/>
-    <circle cx="242" cy="270" r="6" fill="#e0af68"/>
-    <circle cx="260" cy="270" r="6" fill="#7aa2f7"/>
-    <circle cx="278" cy="270" r="6" fill="#bb9af7"/>
-    <circle cx="296" cy="270" r="6" fill="#7dcfff"/>
-    <circle cx="314" cy="270" r="6" fill="#c0caf5"/>
-    <circle cx="332" cy="270" r="6" fill="#414868"/>
-  </g>
+  <!-- ============================================================ -->
+  <!-- ============ PANEL 2: stack (full-width detail view) ======= -->
+  <!-- ============================================================ -->
+  <g class="panel2">
 
-  <!-- Prompt -->
-  <g class="d13">
-    <text x="30" y="310" font-size="11">
+    <!-- Single pane frame (focused) -->
+    <text x="8" y="42" font-size="11" fill="#9ece6a">╭</text>
+    <text x="8" y="407" font-size="11" fill="#9ece6a">╰</text>
+    <text x="847" y="42" font-size="11" fill="#9ece6a">╮</text>
+    <text x="847" y="407" font-size="11" fill="#9ece6a">╯</text>
+    <line x1="18" y1="35" x2="338" y2="35" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <text x="340" y="39" font-size="10" fill="#9ece6a"> pacman -Qi rogerio </text>
+    <line x1="490" y1="35" x2="846" y2="35" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <line x1="18" y1="404" x2="846" y2="404" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <line x1="12" y1="42" x2="12" y2="402" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <line x1="849" y1="42" x2="849" y2="402" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+
+    <!-- pacman -Qi style package info -->
+    <text x="30" y="70" font-size="11">
+      <tspan fill="#9ece6a">$</tspan><tspan fill="#a9b1d6"> pacman -Qi rogerio</tspan>
+    </text>
+
+    <text x="30" y="100" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Name           </tspan><tspan fill="#565f89">: </tspan><tspan fill="#a9b1d6">rogeriojunior31</tspan>
+    </text>
+    <text x="30" y="118" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Version        </tspan><tspan fill="#565f89">: </tspan><tspan fill="#a9b1d6">6.0.0-1</tspan>
+    </text>
+    <text x="30" y="136" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Description    </tspan><tspan fill="#565f89">: </tspan><tspan fill="#a9b1d6">Tech Lead &amp; Backend Specialist</tspan>
+    </text>
+    <text x="30" y="154" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Architecture   </tspan><tspan fill="#565f89">: </tspan><tspan fill="#a9b1d6">x86_64</tspan>
+    </text>
+    <text x="30" y="172" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">URL            </tspan><tspan fill="#565f89">: </tspan><tspan fill="#7dcfff">github.com/rogeriojunior31</tspan>
+    </text>
+    <text x="30" y="190" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Licenses       </tspan><tspan fill="#565f89">: </tspan><tspan fill="#a9b1d6">Open Source Enthusiast</tspan>
+    </text>
+    <text x="30" y="208" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Groups         </tspan><tspan fill="#565f89">: </tspan><tspan fill="#9ece6a">kruzer-io</tspan>
+    </text>
+    <text x="30" y="226" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Provides       </tspan><tspan fill="#565f89">: </tspan><tspan fill="#a9b1d6">backend  api-design  devops  ai-engineering</tspan>
+    </text>
+    <text x="30" y="244" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Depends On     </tspan><tspan fill="#565f89">: </tspan><tspan fill="#e0af68">javascript</tspan>
+      <tspan fill="#a9b1d6">  </tspan><tspan fill="#7aa2f7">typescript</tspan>
+      <tspan fill="#a9b1d6">  </tspan><tspan fill="#9ece6a">python</tspan>
+      <tspan fill="#a9b1d6">  </tspan><tspan fill="#7dcfff">go</tspan>
+      <tspan fill="#a9b1d6">  </tspan><tspan fill="#c0caf5">shell</tspan>
+    </text>
+    <text x="30" y="262" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Optional Deps  </tspan><tspan fill="#565f89">: </tspan><tspan fill="#a9b1d6">coffee  linux-ricing  open-source</tspan>
+    </text>
+    <text x="30" y="280" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Required By    </tspan><tspan fill="#565f89">: </tspan><tspan fill="#a9b1d6">kruzer-io  community  team</tspan>
+    </text>
+    <text x="30" y="298" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Install Date   </tspan><tspan fill="#565f89">: </tspan><tspan fill="#a9b1d6">~2020</tspan>
+    </text>
+    <text x="30" y="316" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Install Reason </tspan><tspan fill="#565f89">: </tspan><tspan fill="#bb9af7">Passion for building elegant solutions</tspan>
+    </text>
+    <text x="30" y="334" font-size="11">
+      <tspan fill="#7aa2f7" font-weight="bold">Validated By   </tspan><tspan fill="#565f89">: </tspan><tspan fill="#a9b1d6">6+ years of shipping code</tspan>
+    </text>
+
+    <!-- Prompt -->
+    <text x="30" y="370" font-size="11">
       <tspan fill="#565f89">~</tspan>
       <tspan fill="#9ece6a"> ❯ </tspan>
       <tspan fill="#a9b1d6" class="cursor">▌</tspan>
     </text>
   </g>
 
-  <!-- ============ RIGHT PANE: Tech Stack ============ -->
+  <!-- ============================================================ -->
+  <!-- ============ PANEL 3: links (contact + profiles) =========== -->
+  <!-- ============================================================ -->
+  <g class="panel3">
 
-  <!-- Languages -->
-  <g class="d2">
-    <text x="458" y="68" font-size="10.5">
-      <tspan fill="#bb9af7" font-weight="bold">  Languages</tspan>
-    </text>
-  </g>
-  <g class="d3">
-    <text x="458" y="86" font-size="10.5">
-      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#e0af68">JavaScript</tspan>
-      <tspan fill="#3b4261"> · </tspan><tspan fill="#7aa2f7">TypeScript</tspan>
-    </text>
-  </g>
-  <g class="d4">
-    <text x="458" y="102" font-size="10.5">
-      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#9ece6a">Python</tspan>
-      <tspan fill="#3b4261"> · </tspan><tspan fill="#7dcfff">Go</tspan>
-    </text>
-  </g>
-  <g class="d5">
-    <text x="458" y="118" font-size="10.5">
-      <tspan fill="#3b4261">  └─ </tspan><tspan fill="#c0caf5">Shell / Bash</tspan>
-    </text>
-  </g>
+    <!-- Single pane frame (focused) -->
+    <text x="8" y="42" font-size="11" fill="#9ece6a">╭</text>
+    <text x="8" y="407" font-size="11" fill="#9ece6a">╰</text>
+    <text x="847" y="42" font-size="11" fill="#9ece6a">╮</text>
+    <text x="847" y="407" font-size="11" fill="#9ece6a">╯</text>
+    <line x1="18" y1="35" x2="338" y2="35" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <text x="340" y="39" font-size="10" fill="#9ece6a"> cat ~/.config/links.toml </text>
+    <line x1="520" y1="35" x2="846" y2="35" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <line x1="18" y1="404" x2="846" y2="404" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <line x1="12" y1="42" x2="12" y2="402" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
+    <line x1="849" y1="42" x2="849" y2="402" stroke="#9ece6a" stroke-width="1" opacity="0.6"/>
 
-  <!-- Platforms -->
-  <g class="d6">
-    <text x="458" y="146" font-size="10.5">
-      <tspan fill="#bb9af7" font-weight="bold">  Platforms &amp; Runtime</tspan>
+    <!-- TOML style config -->
+    <text x="30" y="70" font-size="11">
+      <tspan fill="#9ece6a">$</tspan><tspan fill="#a9b1d6"> cat ~/.config/links.toml</tspan>
     </text>
-  </g>
-  <g class="d7">
-    <text x="458" y="164" font-size="10.5">
-      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#a9b1d6">Node.js</tspan>
-      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">Bun</tspan>
-      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">NestJS</tspan>
-    </text>
-  </g>
-  <g class="d8">
-    <text x="458" y="180" font-size="10.5">
-      <tspan fill="#3b4261">  └─ </tspan><tspan fill="#a9b1d6">Docker</tspan>
-    </text>
-  </g>
 
-  <!-- Cloud -->
-  <g class="d9">
-    <text x="458" y="208" font-size="10.5">
-      <tspan fill="#bb9af7" font-weight="bold">  Cloud &amp; DevOps</tspan>
+    <text x="30" y="100" font-size="11">
+      <tspan fill="#565f89"># Professional</tspan>
     </text>
-  </g>
-  <g class="d10">
-    <text x="458" y="226" font-size="10.5">
-      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#a9b1d6">AWS</tspan>
-      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">Azure</tspan>
+    <text x="30" y="122" font-size="11">
+      <tspan fill="#f7768e">[professional]</tspan>
     </text>
-  </g>
-  <g class="d11">
-    <text x="458" y="242" font-size="10.5">
-      <tspan fill="#3b4261">  └─ </tspan><tspan fill="#a9b1d6">Elastic Stack</tspan>
-      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">GitHub Actions</tspan>
+    <text x="30" y="142" font-size="11">
+      <tspan fill="#7aa2f7">github</tspan><tspan fill="#565f89">     = </tspan><tspan fill="#9ece6a">"github.com/rogeriojunior31"</tspan>
     </text>
-  </g>
+    <text x="30" y="160" font-size="11">
+      <tspan fill="#7aa2f7">linkedin</tspan><tspan fill="#565f89">   = </tspan><tspan fill="#9ece6a">"linkedin.com/in/rogerioqjunior"</tspan>
+    </text>
+    <text x="30" y="178" font-size="11">
+      <tspan fill="#7aa2f7">email</tspan><tspan fill="#565f89">      = </tspan><tspan fill="#9ece6a">"rogerio.junior20@outlook.com"</tspan>
+    </text>
+    <text x="30" y="196" font-size="11">
+      <tspan fill="#7aa2f7">kaggle</tspan><tspan fill="#565f89">     = </tspan><tspan fill="#9ece6a">"kaggle.com/maskara31"</tspan>
+    </text>
+    <text x="30" y="214" font-size="11">
+      <tspan fill="#7aa2f7">company</tspan><tspan fill="#565f89">    = </tspan><tspan fill="#9ece6a">"Kruzer IO"</tspan>
+    </text>
 
-  <!-- AI -->
-  <g class="d12">
-    <text x="458" y="270" font-size="10.5">
-      <tspan fill="#bb9af7" font-weight="bold">  AI &amp; Machine Learning</tspan>
+    <text x="30" y="250" font-size="11">
+      <tspan fill="#565f89"># Gaming</tspan>
     </text>
-  </g>
-  <g class="d13">
-    <text x="458" y="288" font-size="10.5">
-      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#a9b1d6">LangChain</tspan>
-      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">LlamaIndex</tspan>
+    <text x="30" y="272" font-size="11">
+      <tspan fill="#f7768e">[gaming]</tspan>
     </text>
-  </g>
-  <g class="d14">
-    <text x="458" y="304" font-size="10.5">
-      <tspan fill="#3b4261">  └─ </tspan><tspan fill="#a9b1d6">PyTorch</tspan>
-      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">Fine-Tuning</tspan>
+    <text x="30" y="292" font-size="11">
+      <tspan fill="#7aa2f7">steam</tspan><tspan fill="#565f89">      = </tspan><tspan fill="#9ece6a">"steamcommunity.com/id/melvindoooo"</tspan>
     </text>
-  </g>
+    <text x="30" y="310" font-size="11">
+      <tspan fill="#7aa2f7">retro</tspan><tspan fill="#565f89">      = </tspan><tspan fill="#9ece6a">"retroachievements.org/user/Doggy31"</tspan>
+    </text>
 
-  <!-- Databases -->
-  <g class="d15">
-    <text x="458" y="332" font-size="10.5">
-      <tspan fill="#bb9af7" font-weight="bold">  Databases</tspan>
+    <text x="30" y="346" font-size="11">
+      <tspan fill="#565f89"># Currently playing retro games &amp; building cool stuff</tspan>
     </text>
-  </g>
-  <g class="d16">
-    <text x="458" y="350" font-size="10.5">
-      <tspan fill="#3b4261">  ├─ </tspan><tspan fill="#a9b1d6">MongoDB</tspan>
-      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">Redis</tspan>
-    </text>
-  </g>
-  <g class="d17">
-    <text x="458" y="366" font-size="10.5">
-      <tspan fill="#3b4261">  └─ </tspan><tspan fill="#a9b1d6">PostgreSQL</tspan>
-      <tspan fill="#3b4261"> · </tspan><tspan fill="#a9b1d6">MySQL</tspan>
+
+    <!-- Prompt -->
+    <text x="30" y="382" font-size="11">
+      <tspan fill="#565f89">~</tspan>
+      <tspan fill="#9ece6a"> ❯ </tspan>
+      <tspan fill="#a9b1d6" class="cursor">▌</tspan>
     </text>
   </g>
 
   <!-- ============ STATUS BAR — Row 1: Mode ribbons ============ -->
   <rect x="0" y="414" width="860" height="18" fill="#16161e" class="bar"/>
 
-  <!-- NORMAL mode (active — green) -->
   <rect x="6" y="416" width="68" height="14" rx="2" ry="2" fill="#9ece6a" opacity="0.2" class="bar"/>
   <text x="12" y="427" font-size="9.5" fill="#9ece6a" font-weight="bold" class="bar">NORMAL</text>
   <text x="76" y="427" font-size="10" fill="#9ece6a" class="bar"></text>
 
-  <!-- PANE mode -->
   <rect x="88" y="416" width="70" height="14" rx="2" ry="2" fill="#16161e" class="bar"/>
   <text x="94" y="427" font-size="9.5" fill="#565f89" class="bar">PANE</text>
 
-  <!-- TAB mode -->
   <rect x="164" y="416" width="56" height="14" rx="2" ry="2" fill="#16161e" class="bar"/>
   <text x="170" y="427" font-size="9.5" fill="#565f89" class="bar">TAB</text>
 
-  <!-- RESIZE mode -->
   <rect x="226" y="416" width="72" height="14" rx="2" ry="2" fill="#16161e" class="bar"/>
   <text x="232" y="427" font-size="9.5" fill="#565f89" class="bar">RESIZE</text>
 
-  <!-- MOVE mode -->
   <rect x="304" y="416" width="62" height="14" rx="2" ry="2" fill="#16161e" class="bar"/>
   <text x="310" y="427" font-size="9.5" fill="#565f89" class="bar">MOVE</text>
 
-  <!-- SEARCH mode -->
   <rect x="372" y="416" width="72" height="14" rx="2" ry="2" fill="#16161e" class="bar"/>
   <text x="378" y="427" font-size="9.5" fill="#565f89" class="bar">SEARCH</text>
 
-  <!-- SESSION mode -->
   <rect x="450" y="416" width="80" height="14" rx="2" ry="2" fill="#16161e" class="bar"/>
   <text x="456" y="427" font-size="9.5" fill="#565f89" class="bar">SESSION</text>
 
-  <!-- ============ STATUS BAR — Row 2: Tips / Shortcuts ============ -->
+  <!-- ============ STATUS BAR — Row 2: Tips ============ -->
   <rect x="0" y="432" width="860" height="18" fill="#16161e" class="bar"/>
-
   <text x="12" y="444" font-size="9.5" class="bar">
     <tspan fill="#565f89">Tip:</tspan>
     <tspan fill="#e0af68"> Alt+n</tspan><tspan fill="#565f89"> New pane</tspan>
@@ -396,7 +532,7 @@
 
   <text x="720" y="469" font-size="10" class="bar">
     <tspan fill="#9ece6a" class="glow">● </tspan>
-    <tspan fill="#565f89">2 panes</tspan>
+    <tspan fill="#565f89">online</tspan>
     <tspan fill="#3b4261"> │ </tspan>
     <tspan fill="#565f89">3 tabs</tspan>
   </text>
