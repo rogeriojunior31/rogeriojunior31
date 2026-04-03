@@ -197,26 +197,26 @@
     <line x1="437" y1="42" x2="437" y2="402" stroke="#3b4261" stroke-width="1"/>
     <line x1="849" y1="42" x2="849" y2="402" stroke="#3b4261" stroke-width="1"/>
 
-    <!-- Arch Linux ASCII Art (official neofetch/fastfetch) -->
-    <text x="22" y="62" font-size="9.5" fill="#7aa2f7" xml:space="preserve">                  -`                </text>
-    <text x="22" y="76" font-size="9.5" fill="#7aa2f7" xml:space="preserve">                 .o+`               </text>
-    <text x="22" y="90" font-size="9.5" fill="#7aa2f7" xml:space="preserve">                `ooo/               </text>
-    <text x="22" y="104" font-size="9.5" fill="#7aa2f7" xml:space="preserve">               `+oooo:              </text>
-    <text x="22" y="118" font-size="9.5" fill="#7aa2f7" xml:space="preserve">              `+oooooo:             </text>
-    <text x="22" y="132" font-size="9.5" fill="#7aa2f7" xml:space="preserve">              -+oooooo+:            </text>
-    <text x="22" y="146" font-size="9.5" fill="#7aa2f7" xml:space="preserve">            `/:-:++oooo+:           </text>
-    <text x="22" y="160" font-size="9.5" fill="#7aa2f7" xml:space="preserve">           `/++++/+++++++:          </text>
-    <text x="22" y="174" font-size="9.5" fill="#7aa2f7" xml:space="preserve">          `/++++++++++++++:         </text>
-    <text x="22" y="188" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">         `/+++</tspan><tspan fill="#7dcfff">ooooooooooooo/`</tspan></text>
-    <text x="22" y="202" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">        ./ooo</tspan><tspan fill="#7dcfff">sssso++osssssso+`</tspan></text>
-    <text x="22" y="216" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">       .oossssso</tspan><tspan fill="#7dcfff">-````/ossssss+`</tspan></text>
-    <text x="22" y="230" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">      -osssssso.</tspan><tspan fill="#7dcfff">      :ssssssso.</tspan></text>
-    <text x="22" y="244" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">     :osssssss/</tspan><tspan fill="#7dcfff">        osssso+++.</tspan></text>
-    <text x="22" y="258" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">    /ossssssss/</tspan><tspan fill="#7dcfff">        +ssssooo/-</tspan></text>
-    <text x="22" y="272" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7">  `/ossssso+/:-</tspan><tspan fill="#7dcfff">        -:/+osssso+-</tspan></text>
-    <text x="22" y="286" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7"> `+sso+:-`</tspan><tspan fill="#7dcfff">                 `.-/+oso:</tspan></text>
-    <text x="22" y="300" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7"> `++:.</tspan><tspan fill="#7dcfff">                           `-/+/</tspan></text>
-    <text x="22" y="314" font-size="9.5" xml:space="preserve"><tspan fill="#7aa2f7"> .`</tspan><tspan fill="#7dcfff">                                 `/</tspan></text>
+    <!-- Arch Linux ASCII Art (official neofetch/fastfetch — compact) -->
+    <text x="22" y="68" font-size="7.5" fill="#7aa2f7" xml:space="preserve">                  -`                </text>
+    <text x="22" y="79" font-size="7.5" fill="#7aa2f7" xml:space="preserve">                 .o+`               </text>
+    <text x="22" y="90" font-size="7.5" fill="#7aa2f7" xml:space="preserve">                `ooo/               </text>
+    <text x="22" y="101" font-size="7.5" fill="#7aa2f7" xml:space="preserve">               `+oooo:              </text>
+    <text x="22" y="112" font-size="7.5" fill="#7aa2f7" xml:space="preserve">              `+oooooo:             </text>
+    <text x="22" y="123" font-size="7.5" fill="#7aa2f7" xml:space="preserve">              -+oooooo+:            </text>
+    <text x="22" y="134" font-size="7.5" fill="#7aa2f7" xml:space="preserve">            `/:-:++oooo+:           </text>
+    <text x="22" y="145" font-size="7.5" fill="#7aa2f7" xml:space="preserve">           `/++++/+++++++:          </text>
+    <text x="22" y="156" font-size="7.5" fill="#7aa2f7" xml:space="preserve">          `/++++++++++++++:         </text>
+    <text x="22" y="167" font-size="7.5" xml:space="preserve"><tspan fill="#7aa2f7">         `/+++</tspan><tspan fill="#7dcfff">ooooooooooooo/`</tspan></text>
+    <text x="22" y="178" font-size="7.5" xml:space="preserve"><tspan fill="#7aa2f7">        ./ooo</tspan><tspan fill="#7dcfff">sssso++osssssso+`</tspan></text>
+    <text x="22" y="189" font-size="7.5" xml:space="preserve"><tspan fill="#7aa2f7">       .oossssso</tspan><tspan fill="#7dcfff">-````/ossssss+`</tspan></text>
+    <text x="22" y="200" font-size="7.5" xml:space="preserve"><tspan fill="#7aa2f7">      -osssssso.</tspan><tspan fill="#7dcfff">      :ssssssso.</tspan></text>
+    <text x="22" y="211" font-size="7.5" xml:space="preserve"><tspan fill="#7aa2f7">     :osssssss/</tspan><tspan fill="#7dcfff">        osssso+++.</tspan></text>
+    <text x="22" y="222" font-size="7.5" xml:space="preserve"><tspan fill="#7aa2f7">    /ossssssss/</tspan><tspan fill="#7dcfff">        +ssssooo/-</tspan></text>
+    <text x="22" y="233" font-size="7.5" xml:space="preserve"><tspan fill="#7aa2f7">  `/ossssso+/:-</tspan><tspan fill="#7dcfff">        -:/+osssso+-</tspan></text>
+    <text x="22" y="244" font-size="7.5" xml:space="preserve"><tspan fill="#7aa2f7"> `+sso+:-`</tspan><tspan fill="#7dcfff">                 `.-/+oso:</tspan></text>
+    <text x="22" y="255" font-size="7.5" xml:space="preserve"><tspan fill="#7aa2f7"> `++:.</tspan><tspan fill="#7dcfff">                           `-/+/</tspan></text>
+    <text x="22" y="266" font-size="7.5" xml:space="preserve"><tspan fill="#7aa2f7"> .`</tspan><tspan fill="#7dcfff">                                 `/</tspan></text>
 
     <!-- Fastfetch info (right side) -->
     <text x="230" y="62" font-size="10.5">

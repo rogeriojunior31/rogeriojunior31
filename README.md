@@ -6,14 +6,11 @@
   <a href="https://www.linkedin.com/in/rogerioqjunior/">
     <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
   </a>&nbsp;
-  <a href="mailto:rogerio.junior20@outlook.com">
-    <img src="https://img.shields.io/badge/Outlook-0078D4?style=for-the-badge&logo=microsoftoutlook&logoColor=white" alt="Email"/>
-  </a>&nbsp;
   <a href="https://www.kaggle.com/maskara31">
     <img src="https://img.shields.io/badge/Kaggle-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white" alt="Kaggle"/>
   </a>&nbsp;
   <a href="https://www.linkedin.com/company/kruzerio/">
-    <img src="https://img.shields.io/badge/Kruzer_IO-9ece6a?style=for-the-badge&logo=buildkite&logoColor=1a1b26" alt="Kruzer IO"/>
+    <img src="https://img.shields.io/badge/Kruzer_IO-0077B5?style=for-the-badge&logo=buildkite&logoColor=white" alt="Kruzer IO"/>
   </a>
 </p>
 
