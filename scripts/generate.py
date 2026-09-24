@@ -266,8 +266,11 @@ def fetch():
     )
     with urllib.request.urlopen(req, timeout=30) as r:
         body = json.load(r)
-    if "errors" in body:
-        sys.exit(f"GraphQL error: {body['errors']}")
+    # a featured repo that is still private resolves to NOT_FOUND for any token but mine; that is a "soon" card
+    errors = [e for e in body.get("errors", [])
+              if not (e.get("type") == "NOT_FOUND" and re.fullmatch(r"f\d+", str(e.get("path", [""])[0])))]
+    if errors:
+        sys.exit(f"GraphQL error: {errors}")
     return body["data"]
 
 
