@@ -1,48 +1,31 @@
 <p align="center">
-  <img src="header.svg" alt="Zellij Terminal - Rogério Junior" width="860"/>
+  <img src="header.svg" width="100%" alt="tmux session on rogerio@archlinux: fastfetch (Software Engineer Specialist at CSU Digital, building AI tools; Arch Linux, fish, tmux, SP Night theme), my stack, a pacman -Qi about page and my links"/>
 </p>
 
 <p align="center">
-  <a href="https://www.linkedin.com/in/rogerioqjunior/">
-    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
-  </a>&nbsp;
-  <a href="https://www.kaggle.com/maskara31">
-    <img src="https://img.shields.io/badge/Kaggle-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white" alt="Kaggle"/>
-  </a>&nbsp;
-  <a href="https://www.linkedin.com/company/kruzerio/">
-    <img src="https://img.shields.io/badge/Kruzer_IO-0077B5?style=for-the-badge&logo=buildkite&logoColor=white" alt="Kruzer IO"/>
-  </a>
-</p>
-
----
-
-### `> github --stats`
-
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=rogeriojunior31&show_icons=true&hide_border=true&include_all_commits=true&count_private=true&bg_color=1a1b26&title_color=7aa2f7&icon_color=bb9af7&text_color=a9b1d6&ring_color=7aa2f7" alt="GitHub Stats" height="165"/>
-  &nbsp;
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=rogeriojunior31&layout=compact&hide_border=true&bg_color=1a1b26&title_color=7aa2f7&text_color=a9b1d6" alt="Top Languages" height="165"/>
+  <a href="https://www.linkedin.com/in/rogerioqjunior/"><img src="https://img.shields.io/badge/linkedin-rogerioqjunior-6e92de?style=flat-square&logo=linkedin&logoColor=e7ebff&labelColor=151723" alt="LinkedIn"/></a>
+  <a href="https://www.kaggle.com/maskara31"><img src="https://img.shields.io/badge/kaggle-maskara31-5dbec4?style=flat-square&logo=kaggle&logoColor=e7ebff&labelColor=151723" alt="Kaggle"/></a>
+  <a href="https://www.linkedin.com/company/csu-digital/"><img src="https://img.shields.io/badge/work-csu_digital-89d093?style=flat-square&logo=buildkite&logoColor=e7ebff&labelColor=151723" alt="CSU Digital"/></a>
+  <a href="https://steamcommunity.com/id/melvindoooo/"><img src="https://img.shields.io/badge/steam-melvindoooo-b094e2?style=flat-square&logo=steam&logoColor=e7ebff&labelColor=151723" alt="Steam"/></a>
+  <a href="https://retroachievements.org/user/Doggy31"><img src="https://img.shields.io/badge/retroachievements-Doggy31-f5c66b?style=flat-square&logo=retroachievements&logoColor=e7ebff&labelColor=151723" alt="RetroAchievements"/></a>
 </p>
 
 <p align="center">
-  <img src="https://github-readme-streak-stats.herokuapp.com?user=rogeriojunior31&hide_border=true&background=1a1b26&stroke=29384b&ring=7aa2f7&fire=f7768e&currStreakNum=a9b1d6&sideNums=a9b1d6&currStreakLabel=7aa2f7&sideLabels=565f89&dates=565f89" alt="GitHub Streak" width="520"/>
+  <img src="projects.svg" width="100%" alt="Projects I created and maintain: SP Night, a São Paulo dark theme with ports for Alacritty, eza, Ghostty, Helix, herdr and kitty; and lazyagents, going public soon"/>
 </p>
 
----
-
-### `> cat /etc/profiles/gaming.conf`
+<!-- projects:start -->
+<p align="center">
+  <a href="https://sp-night.github.io"><img src="https://img.shields.io/badge/SP_Night-creator_%26_maintainer-f2984a?style=flat-square&labelColor=151723" alt="SP Night"/></a>
+</p>
+<!-- projects:end -->
 
 <p align="center">
-  <a href="https://steamcommunity.com/id/melvindoooo/">
-    <img src="https://img.shields.io/badge/Steam-000000?style=for-the-badge&logo=steam&logoColor=white" alt="Steam"/>
-  </a>&nbsp;
-  <a href="https://retroachievements.org/user/Doggy31">
-    <img src="https://img.shields.io/badge/RetroAchievements-cc9900?style=for-the-badge&logo=retroachievements&logoColor=white" alt="RetroAchievements"/>
-  </a>
+  <img src="activity.svg" width="100%" alt="GitHub contributions over the last year, including private work"/>
 </p>
-
----
 
 <p align="center">
-  <img src="https://komarev.com/ghpvc/?username=rogeriojunior31&color=7aa2f7&style=flat-square&label=profile+views" alt="Profile views"/>
+  <img src="https://komarev.com/ghpvc/?username=rogeriojunior31&color=f2984a&style=flat-square&label=profile+views" alt="Profile views"/>
 </p>
+
+<sub>All three terminals are rendered daily from the GitHub API by <a href="scripts/generate.py"><code>scripts/generate.py</code></a>.</sub>
