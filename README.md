@@ -27,5 +27,3 @@
 <p align="center">
   <img src="https://komarev.com/ghpvc/?username=rogeriojunior31&color=f2984a&style=flat-square&label=profile+views" alt="Profile views"/>
 </p>
-
-<sub>All three terminals are rendered daily from the GitHub API by <a href="scripts/generate.py"><code>scripts/generate.py</code></a>.</sub>
