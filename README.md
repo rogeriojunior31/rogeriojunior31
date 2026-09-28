@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img src="projects.svg" width="100%" alt="Projects I created and maintain: SP Night, a São Paulo dark theme with ports for Alacritty, eza, Ghostty, Helix, herdr and kitty; and lazyagents, going public soon"/>
+  <img src="projects.svg" width="100%" alt="Projects I created and maintain: SP Night, a São Paulo dark theme with ports for Alacritty, eza, Ghostty, Helix, herdr and kitty; and lazyagents, a TUI to manage the skills, sessions, usage, providers and hooks of AI coding agents"/>
 </p>
 
 <!-- projects:start -->
