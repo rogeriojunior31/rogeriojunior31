@@ -17,6 +17,7 @@
 <!-- projects:start -->
 <p align="center">
   <a href="https://sp-night.github.io"><img src="https://img.shields.io/badge/SP_Night-creator_%26_maintainer-f2984a?style=flat-square&labelColor=151723" alt="SP Night"/></a>
+  <a href="https://rogeriojunior31.github.io/en/projects/lazyagents/"><img src="https://img.shields.io/badge/lazyagents-creator_%26_maintainer-f2984a?style=flat-square&labelColor=151723" alt="lazyagents"/></a>
 </p>
 <!-- projects:end -->
 
