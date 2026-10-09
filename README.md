@@ -1,30 +1,9 @@
 <p align="center">
-  <img src="header.svg" width="100%" alt="tmux session on rogerio@archlinux: fastfetch (Software Engineer Specialist at CSU Digital, building AI tools; Arch Linux, fish, tmux, SP Night theme), my stack, a pacman -Qi about page and my links"/>
+  <a href="https://rogeriojunior31.github.io"><img src="header.svg" width="100%" alt="A tmux session on rogerio@archlinux in four windows: whoami (fastfetch with my setup), stack (the tools I build with and what I focus on), career (my work history as a git log) and now (contributions this year and the newest projects on my site)"/></a>
 </p>
 
+<!-- links:start -->
 <p align="center">
-  <a href="https://www.linkedin.com/in/rogerioqjunior/"><img src="https://img.shields.io/badge/linkedin-rogerioqjunior-6e92de?style=flat-square&logo=linkedin&logoColor=e7ebff&labelColor=151723" alt="LinkedIn"/></a>
-  <a href="https://www.kaggle.com/maskara31"><img src="https://img.shields.io/badge/kaggle-maskara31-5dbec4?style=flat-square&logo=kaggle&logoColor=e7ebff&labelColor=151723" alt="Kaggle"/></a>
-  <a href="https://www.linkedin.com/company/csu-digital/"><img src="https://img.shields.io/badge/work-csu_digital-89d093?style=flat-square&logo=buildkite&logoColor=e7ebff&labelColor=151723" alt="CSU Digital"/></a>
-  <a href="https://steamcommunity.com/id/melvindoooo/"><img src="https://img.shields.io/badge/steam-melvindoooo-b094e2?style=flat-square&logo=steam&logoColor=e7ebff&labelColor=151723" alt="Steam"/></a>
-  <a href="https://retroachievements.org/user/Doggy31"><img src="https://img.shields.io/badge/retroachievements-Doggy31-f5c66b?style=flat-square&logo=retroachievements&logoColor=e7ebff&labelColor=151723" alt="RetroAchievements"/></a>
+  <img src="links/me.svg" alt="me:"/><a href="https://rogeriojunior31.github.io"><img src="links/site.svg" alt="site"/></a><a href="https://rogeriojunior31.github.io/en/about/"><img src="links/about.svg" alt="about"/></a><a href="https://rogeriojunior31.github.io/en/resume/"><img src="links/resume.svg" alt="resume"/></a><img src="links/talk.svg" alt="talk:"/><a href="https://www.linkedin.com/in/rogerioqjunior/"><img src="links/linkedin.svg" alt="linkedin"/></a><a href="mailto:rogerio.junior20@outlook.com"><img src="links/email.svg" alt="email"/></a><a href="https://www.kaggle.com/maskara31"><img src="links/kaggle.svg" alt="kaggle"/></a><img src="links/play.svg" alt="play:"/><a href="https://steamcommunity.com/id/melvindoooo/"><img src="links/steam.svg" alt="steam"/></a><a href="https://retroachievements.org/user/Doggy31"><img src="links/retro.svg" alt="retro"/></a>
 </p>
-
-<p align="center">
-  <img src="projects.svg" width="100%" alt="Projects I created and maintain: SP Night, a São Paulo dark theme with ports for Alacritty, eza, Ghostty, Helix, herdr and kitty; and lazyagents, a TUI to manage the skills, sessions, usage, providers and hooks of AI coding agents"/>
-</p>
-
-<!-- projects:start -->
-<p align="center">
-  <a href="https://sp-night.github.io"><img src="https://img.shields.io/badge/SP_Night-creator_%26_maintainer-f2984a?style=flat-square&labelColor=151723" alt="SP Night"/></a>
-  <a href="https://rogeriojunior31.github.io/en/projects/lazyagents/"><img src="https://img.shields.io/badge/lazyagents-creator_%26_maintainer-f2984a?style=flat-square&labelColor=151723" alt="lazyagents"/></a>
-</p>
-<!-- projects:end -->
-
-<p align="center">
-  <img src="activity.svg" width="100%" alt="GitHub contributions over the last year, including private work"/>
-</p>
-
-<p align="center">
-  <img src="https://komarev.com/ghpvc/?username=rogeriojunior31&color=f2984a&style=flat-square&label=profile+views" alt="Profile views"/>
-</p>
+<!-- links:end -->
