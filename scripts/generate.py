@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Render header.svg (tmux session) and activity.svg (contribution graph).
+"""Render the profile: header.svg (a tmux tour) and the link bar under it (links/*.svg).
+
+The header has four windows, one subject each, and no fact appears in two of them:
+whoami (the person and the machine), stack (tools and focus), career (work history,
+from the site's data/experience.yaml) and now (contributions, plus the newest
+projects from the site's feed). Projects live on the site; the profile only points
+at them.
 
 Colours come from the SP Night contract (palette + roles), never from hex
 literals: every element asks for a role, exactly like an SP Night port does.
@@ -14,9 +20,12 @@ import base64
 import datetime as dt
 import json
 import os
+import hashlib
 import re
 import sys
 import urllib.request
+import xml.etree.ElementTree as ET
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -204,30 +213,12 @@ def lang(name, text=None):
 
 
 # TOML, highlighted with the roles a tree-sitter TOML grammar asks for
-def toml_table(name):
-    return [("syntax.punctuation", "["), ("syntax.type", name), ("syntax.punctuation", "]")]
-
-
-def toml_kv(key, pad, *value):
-    return [("syntax.property", f"{key:<{pad}}"), ("syntax.operator", " = "), *value]
-
-
-def toml_str(v):
-    return ("syntax.string", f'"{v}"')
-
 
 # ── data ─────────────────────────────────────────────────────────────────────
-REPO = "nameWithOwner description stargazerCount pushedAt isFork primaryLanguage { name }"
 QUERY = """
 query($login: String!) {
-  org: organization(login: "sp-night") {
-    repositories(first: 20, privacy: PUBLIC, orderBy: {field: PUSHED_AT, direction: DESC}) { nodes { %(r)s } }
-  }
-%(featured)s
   user(login: $login) {
     createdAt location
-    repositories(first: 20, privacy: PUBLIC, ownerAffiliations: OWNER,
-      orderBy: {field: PUSHED_AT, direction: DESC}) { nodes { %(r)s } }
     repositoriesContributedTo(includeUserRepositories: true,
       contributionTypes: [COMMIT, PULL_REQUEST, REPOSITORY]) { totalCount }
     contributionsCollection {
@@ -240,19 +231,10 @@ query($login: String!) {
   }
 }"""
 
-
-# Projects I created and maintain, in the order they are shown. A repo that is
-# private (or not visible to the token) renders as "going public soon" and fills
-# itself in from GitHub on the first render after it opens.
-FEATURED = [
-    {"title": "SP Night", "repo": "sp-night/sp-night.github.io", "org": "sp-night", "role": "creator & maintainer"},
-    {"title": "lazyagents", "repo": f"{USER}/lazyagents", "role": "creator & maintainer"},
-]
-FEATURED_FIELDS = ("nameWithOwner isPrivate description homepageUrl url stargazerCount forkCount pushedAt "
-                   "primaryLanguage { name } repositoryTopics(first: 6) { nodes { topic { name } } }")
-QUERY = QUERY % {"r": REPO, "featured": "\n".join(
-    f'  f{i}: repository(owner: "{p["repo"].split("/")[0]}", name: "{p["repo"].split("/")[1]}") {{ {FEATURED_FIELDS} }}'
-    for i, p in enumerate(FEATURED))}
+# The site is the source of truth for projects and career; the profile reads them from it.
+SITE = f"https://{USER}.github.io"
+SITE_FEED = f"{SITE}/en/index.xml"
+SITE_EXPERIENCE = f"https://raw.githubusercontent.com/{USER}/{USER}.github.io/main/data/experience.yaml"
 
 
 def fetch():
@@ -266,11 +248,8 @@ def fetch():
     )
     with urllib.request.urlopen(req, timeout=30) as r:
         body = json.load(r)
-    # a featured repo that is still private resolves to NOT_FOUND for any token but mine; that is a "soon" card
-    errors = [e for e in body.get("errors", [])
-              if not (e.get("type") == "NOT_FOUND" and re.fullmatch(r"f\d+", str(e.get("path", [""])[0])))]
-    if errors:
-        sys.exit(f"GraphQL error: {errors}")
+    if body.get("errors"):
+        sys.exit(f"GraphQL error: {body['errors']}")
     return body["data"]
 
 
@@ -318,64 +297,47 @@ def stats(user, today):
 
 
 # repos that exist but have no description on GitHub yet
-DESCRIPTIONS = {
-    f"{USER}/Fine-tune-Gemma-models-in-Keras-using-LoRA": "fine-tuning Gemma in Keras with LoRA",
-    f"{USER}/house_price_predictor": "house price regression model",
-}
-PORT_SUFFIX = "SP Night for "
+def load_text(url):
+    with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": USER}), timeout=30) as r:
+        return r.read().decode()
 
 
-def audit_pairs_per_flavor():
-    """How many pairs `spn check` gates per flavour, derived from the palette like audit.Flavor does:
-    4 surfaces x (fg, fg_vivo, accents, brights, fg_dim, fg_muted) + fiacao on 2 border surfaces."""
-    g = T.palette["groups"]
-    return 4 * (4 + len(g["accents"]["keys"]) + len(g["vivo"]["keys"])) + 2
+def site_projects():
+    """Project pages from the site's feed, newest first."""
+    items = []
+    for i in ET.fromstring(load_text(SITE_FEED)).iter("item"):
+        if "/en/projects/" in i.findtext("link", ""):
+            items.append({"title": i.findtext("title"), "date": parsedate_to_datetime(i.findtext("pubDate")).date(),
+                          "desc": " ".join((i.findtext("description") or "").split())})
+    if not items:
+        sys.exit(f"no projects in {SITE_FEED}")
+    return sorted(items, key=lambda p: p["date"], reverse=True)
 
 
-def featured(data):
-    """One card per FEATURED entry. Only public data is shown; nothing is invented for a private repo."""
-    cards, featured_repos = [], {p["repo"] for p in FEATURED}
-    for i, p in enumerate(FEATURED):
-        r = data.get(f"f{i}")
-        card = {"title": p["title"], "role": p["role"], "repo": p["repo"], "live": bool(r) and not r["isPrivate"]}
-        if card["live"]:
-            card.update(desc=r["description"] or "", url=r["homepageUrl"] or r["url"],
-                        stars=r["stargazerCount"], forks=r["forkCount"], pushed=r["pushedAt"],
-                        langs=[r["primaryLanguage"]["name"]] if r["primaryLanguage"] else [],
-                        topics=[t["topic"]["name"] for t in r["repositoryTopics"]["nodes"]])
-            if p.get("org") and data.get("org"):
-                org = [o for o in data["org"]["repositories"]["nodes"] if not o["nameWithOwner"].endswith("/.github")]
-                card["ports"] = sorted(o["nameWithOwner"].split("/")[1] for o in org if PORT_SUFFIX in (o["description"] or ""))
-                card["stars"] = sum(o["stargazerCount"] for o in org)
-                card["pushed"] = max(o["pushedAt"] for o in org)
-                card["langs"] = sorted({o["primaryLanguage"]["name"] for o in org if o["primaryLanguage"]})
-                card["desc"] = re.sub(r" — three flavours, \d+ colours$", "", card["desc"])
-                card["theme"] = True
-        cards.append(card)
-    others = []
-    for r in data["user"]["repositories"]["nodes"]:
-        name = r["nameWithOwner"]
-        if r["isFork"] or name in featured_repos or name == f"{USER}/{USER}":
+def career():
+    """The work entries of the site's data/experience.yaml. That file is a flat list of
+    `key: "value"` maps; anything else in it means the format changed, so fail loudly."""
+    entries = []
+    for raw in load_text(SITE_EXPERIENCE).splitlines():
+        text = raw.rstrip()
+        if not text.strip() or text.lstrip().startswith("#"):
             continue
-        others.append(name.split("/")[1])
-    return cards, others[:4]
-
-
-def ago(iso, today):
-    days = (today - dt.date.fromisoformat(iso[:10])).days
-    if days < 1:
-        return "today"
-    if days < 30:
-        return f"{days}d ago"
-    if days < 365:
-        return f"{days // 30}mo ago"
-    return f"{days // 365}y ago"
-
+        m = re.fullmatch(r'(- |  )(\w+): "(.*)"', text)
+        if not m:
+            sys.exit(f"experience.yaml: unexpected line {raw!r}")
+        if m[1] == "- ":
+            entries.append({})
+        entries[-1][m[2]] = m[3]
+    en = lambda e, k: e.get(f"{k}_en") or e.get(k, "")
+    return [{"place": e["place"], "since": en(e, "time").split(" - ")[0], "title": en(e, "title"),
+             "note": en(e, "subtitle")} for e in entries if e.get("category") == "work"]
 
 # ── svg scaffolding ──────────────────────────────────────────────────────────
-def font_face():
+def font_face(weights=(400, 700)):
     faces = []
     for weight, name in ((400, "Regular"), (700, "Bold")):
+        if weight not in weights:
+            continue
         data = base64.b64encode((ROOT / f"assets/fonts/JetBrainsMono-{name}.subset.woff2").read_bytes()).decode()
         faces.append(f"@font-face{{font-family:JBM;font-weight:{weight};src:url(data:font/woff2;base64,{data}) format('woff2')}}")
     return "".join(faces)
@@ -460,51 +422,49 @@ ARCH = [  # neofetch Arch logo; "|" splits the two colours
 ]
 
 
-def win_fastfetch(s):
-    """Returns (typed command, command col/row, pane frame svg, output svg)."""
+def plural(n, word):
+    return f"{n} {word}{'' if n == 1 else 's'}"
+
+
+def win_whoami(s, site):
+    """Returns (typed command, command col/row, pane frame svg, output svg).
+    The person and the machine; job, tools and numbers each have their own window."""
     frame = [hline(0, COLS - 1, 0, True, "0 fastfetch")]
     o = []
     for i, raw in enumerate(ARCH):
         a, _, b = raw.partition("|")
         o.append(line(2, 3 + i, ("ansi.blue", a), ("ansi.cyan", b)))
-    k = 44
+    k, top = 44, 6
     fg, dim = "ui.fg", "ui.fg_dim"
     info = [
         ("OS", [(fg, "Arch Linux x86_64")]),
-        ("Host", [(fg, "CSU Digital"), (dim, "  (Software Engineer Specialist)")]),
-        ("Kernel", [(fg, f"swe-specialist {s['years']}.{s['months']}.0-csu")]),
-        ("Uptime", [(fg, f"{s['years']} years, {s['months']} months, {s['days_rem']} days")]),
-        ("Packages", [(fg, f"{s['repos']} (git repos), {s['total']} (contribs/yr)")]),
         ("Shell", [(fg, "fish")]),
         ("Terminal", [(fg, "tmux")]),
-        ("Theme", [(fg, "SP Night"), (dim, " [Noite Paulista] · sp-night.github.io")]),
         ("Font", [(fg, "JetBrains Mono")]),
-        ("Role", [(fg, "Software Engineer Specialist")]),
-        ("Focus", [(fg, "AI tooling · LLM apps · Backend · DevOps")]),
-        ("Languages", [lang("TypeScript"), (dim, ", "), lang("JavaScript"), (dim, ", "),
-                       lang("Python"), (dim, ", "), lang("Go"), (dim, ", "), lang("Bash")]),
-        ("Interests", [(fg, "Linux, self-hosting, open source, CLI tools")]),
-        ("Location", [(fg, f"{s['location']} · BR")]),
-        ("Streak", [("diagnostic.ok", f"{s['current']} days"), (dim, f" (longest {s['longest']})")]),
+        ("Theme", [(fg, "SP Night"), (dim, " [Noite Paulista] · my colour scheme")]),
+        ("Uptime", [(fg, f"{plural(s['years'], 'year')}, {plural(s['months'], 'month')} on GitHub")]),
+        ("Location", [(fg, s["location"])]),
         ("Locale", [(fg, "pt_BR.UTF-8, en_US.UTF-8")]),
+        ("Interests", [(fg, "Linux, self-hosting, CLI tools")]),
+        ("Off-hours", [(fg, "retro games")]),
     ]
-    o.append(line(k, 3, ("ansi.blue b", "rogerio"), (fg, "@"), ("ansi.blue b", "archlinux")))
-    o.append(line(k, 4, ("ui.fg_muted", "-" * 17)))
+    o.append(line(k, top, ("ansi.blue b", "rogerio"), (fg, "@"), ("ansi.blue b", "archlinux")))
+    o.append(line(k, top + 1, ("ui.fg_muted", "-" * 17)))
     for i, (key, val) in enumerate(info):
-        o.append(line(k, 5 + i, ("ansi.blue b", key), (fg, ": "), *val))
+        o.append(line(k, top + 2 + i, ("ansi.blue b", key), (fg, ": "), *val))
     ansi = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"]
     for i, name in enumerate(ansi + [f"bright_{n}" for n in ansi]):
-        r = 6 + len(info) + i // 8
+        r = top + 3 + len(info) + i // 8
         o.append(f'<rect x="{f(x(k + (i % 8) * 3))}" y="{f(PY + r * LH + 1)}" width="{f(3 * CW)}" '
                  f'height="{LH - 2}" fill="{T.hex("ansi." + name)}"/>')
     o.append(prompt(0, 25, cursor=True))
     return "fastfetch", (0, 1), "".join(frame), "".join(o)
 
 
-def win_stack(s):
+def win_stack(s, site):
+    """What I build with (the tree, grouped like the site's resume) and where the time goes (units)."""
     split = 52
-    frame = [hline(0, split - 1, 0, True, "1 ~/stack"), vline(split, 0, 26),
-             hline(split + 1, COLS - 1, 0, False, "2 units"), hline(split + 1, COLS - 1, 15, False, "3 setup")]
+    frame = [hline(0, split - 1, 0, True, "1 ~/stack"), vline(split, 0, 26), hline(split + 1, COLS - 1, 0, False, "2 focus")]
     o = []
     # eza port: directory = syntax.keyword bold, tree punctuation = ui.fg_muted, files = ui.fg
     D, F, P = "syntax.keyword b", "ui.fg", "ui.fg_muted"
@@ -521,361 +481,75 @@ def win_stack(s):
         [(P, "│   ├── "), (F, "aws  azure  docker")],
         [(P, "│   └── "), (F, "github-actions  elastic-stack")],
         [(P, "├── "), (D, "ai-ml")],
-        [(P, "│   ├── "), (F, "langchain  llamaindex")],
-        [(P, "│   ├── "), (F, "pytorch  keras  lora-fine-tuning")],
-        [(P, "│   └── "), (F, "ai-dev-tools  llm-apis")],
+        [(P, "│   ├── "), (F, "langchain  llamaindex  llm-apis")],
+        [(P, "│   └── "), (F, "pytorch  keras  lora-fine-tuning")],
         [(P, "└── "), (D, "databases")],
-        [(P, "    ├── "), (F, "postgresql  mysql")],
-        [(P, "    └── "), (F, "mongodb  redis")],
+        [(P, "    └── "), (F, "postgresql  mysql  mongodb  redis")],
     ]
     for i, segs in enumerate(tree):
         o.append(line(1, 3 + i, *segs))
-    o.append(line(1, 22, (F, "5 directories, 26 files")))
-    o.append(prompt(1, 24, cursor=True))
+    o.append(line(1, 20, (F, "5 directories, 25 tools")))
+    o.append(prompt(1, 25, cursor=True))
 
     c = split + 2
     o.append(prompt(c, 1, "systemctl --user list-units"))
-    o.append(line(c, 2, ("ui.fg_bright b", f"{'UNIT':<24}{'ACTIVE':<8}{'SUB':<9}DESCRIPTION")))
+    o.append(line(c, 3, ("ui.fg_bright b", f"  {'UNIT':<22}{'SUB':<9}DESCRIPTION")))
     units = [
-        ("ai-tooling.service", "active", "running", "building AI dev tools"),
-        ("llm-apps.service", "active", "running", "RAG, agents, tuning"),
-        ("backend.service", "active", "running", "APIs & distributed sys"),
-        ("devops.service", "active", "running", "CI/CD, cloud & infra"),
-        ("architecture.service", "active", "running", "design & code reviews"),
-        ("self-hosting.service", "active", "running", "homelab & open source"),
-        ("kaggle.timer", "active", "waiting", "ML experiments"),
-        ("retro-gaming.timer", "active", "waiting", "nights & weekends"),
-        ("coffee.service", "failed", "failed", "out of beans"),
+        ("ai-tooling.service", "running", "dev tools built on LLMs"),
+        ("llm-apps.service", "running", "RAG, agents, fine-tuning"),
+        ("backend.service", "running", "APIs and distributed systems"),
+        ("devops.service", "running", "CI/CD, cloud, infra"),
+        ("open-source.service", "running", "themes, TUIs and desktop apps"),
+        ("kaggle.timer", "waiting", "ML experiments"),
+        ("coffee.service", "failed", "out of beans"),
     ]
-    for i, (u, a, sub, d) in enumerate(units):
-        state = "diagnostic.ok" if a == "active" else "diagnostic.error"
-        o.append(line(c - 1, 3 + i, (state, "●"), (F, f"{u:<24}"), (state + ("" if a == "active" else " b"), f"{a:<8}"),
-                      (F if a == "active" else state, f"{sub:<9}"), ("ui.fg_dim", d)))
-    o.append(line(c, 4 + len(units), ("ui.fg_dim", f"{len(units)} loaded units listed.")))
-
-    o.append(prompt(c, 16, "cat ~/.config/setup.toml"))
-    setup = [("os", "arch linux"), ("shell", "fish"), ("mux", "tmux"),
-             ("theme", "sp-night noite"), ("font", "jetbrains mono"), ("fuel", "coffee")]
-    for i, (key, val) in enumerate(setup):
-        o.append(line(c, 17 + i, *toml_kv(key, 5, toml_str(val))))
+    for i, (u, sub, d) in enumerate(units):
+        ok = sub != "failed"
+        state = "diagnostic.ok" if ok else "diagnostic.error"
+        o.append(line(c, 4 + i, (state, "● "), (F, f"{u:<22}"), (F if ok else state + " b", f"{sub:<9}"), ("ui.fg_dim", d)))
+    o.append(line(c, 5 + len(units), ("ui.fg_dim", f"{len(units)} loaded units listed.")))
     return "eza --tree ~/stack", (1, 1), "".join(frame), "".join(o)
 
 
-def win_about(s):
-    frame = [hline(0, COLS - 1, 0, True, "1 pacman"), hline(0, COLS - 1, 18, False, "2 git")]
-    o = []
-    created, fg = s["created"], "ui.fg"
-    rows = [
-        ("Name", [("ui.fg_bright b", USER)]),
-        ("Version", [(fg, f"{s['years']}.{s['months']}.{s['days_rem']}-1")]),
-        ("Description", [(fg, "Software Engineer Specialist building AI tools and the backends behind them")]),
-        ("Architecture", [(fg, "x86_64")]),
-        ("URL", [("ui.link", f"https://github.com/{USER}")]),
-        ("Licenses", [(fg, "Open Source Enthusiast")]),
-        ("Groups", [(fg, "csu-digital")]),
-        ("Provides", [(fg, "ai-tooling  llm-apps  backend  api-design  devops")]),
-        ("Depends On", [lang("typescript"), (fg, "  "), lang("python"), (fg, "  "), lang("go"), (fg, "  "),
-                        lang("bash"), (fg, "  coffee")]),
-        ("Optional Deps", [(fg, "sp-night  linux-ricing  self-hosting  retro-games"), ("ui.fg_dim", "  [installed]")]),
-        ("Required By", [(fg, "csu-digital  community  team")]),
-        ("Install Date", [(fg, created.strftime("%a %d %b %Y"))]),
-        ("Install Reason", [(fg, "Passion for building elegant solutions")]),
-        ("Validated By", [(fg, f"{s['years']}+ years of shipping code · {s['total']} contributions last year")]),
-    ]
-    for i, (key, val) in enumerate(rows):
-        o.append(line(1, 3 + i, ("ui.fg_bright b", f"{key:<15}"), ("syntax.punctuation", ": "), *val))
-
-    # git's own decoration colours, through the terminal's ANSI slots (bold = bright)
-    o.append(prompt(1, 19, "git log --oneline --graph career"))
-    Y = "ansi.yellow"
-    log = [
-        ("c5d1a09", [("ansi.bright_cyan b", "HEAD -> "), ("ansi.bright_green b", "main"), (Y, ", "),
-                     ("ansi.bright_red b", "csu-digital")], "feat: Software Engineer Specialist @ CSU Digital, building AI tools"),
-        ("4f2c9a1", [("ansi.bright_red b", "kruzer-io")], "feat: Tech Lead @ Kruzer IO"),
-        ("8b17e03", [("ansi.bright_red b", "samsung-sds")], "chore: previous chapter @ Samsung SDS"),
-        ("d91c4e7", [], "feat: dive into ML (Gemma + LoRA, Kaggle notebooks)"),
-        ("0a1b2c3", [("ansi.bright_yellow b", f"tag: v{created.year}")], f"init: hello, github ({created.isoformat()})"),
-    ]
-    for i, (sha, refs, msg) in enumerate(log):
-        deco = [(Y, "("), *refs, (Y, ") ")] if refs else []
-        o.append(line(1, 20 + i, ("ansi.red", "* "), (Y, sha + " "), *deco, (fg, msg)))
-    o.append(prompt(1, 25, cursor=True))
-    return "pacman -Qi rogerio", (1, 1), "".join(frame), "".join(o)
+def win_career(s, site):
+    """Work history from the site, as git log --graph (git's decoration colours, through ANSI)."""
+    frame = [hline(0, COLS - 1, 0, True, "2 git")]
+    o, Y, G = [], "ansi.yellow", "ansi.red"
+    jobs, row = site["career"], 3
+    for i, job in enumerate(jobs):
+        rows = 4 + bool(job["note"])
+        if row + rows > 24:   # keep the prompt free; the oldest entries drop off first
+            break
+        sha = hashlib.sha1(f"{job['place']}{job['since']}".encode()).hexdigest()[:7]
+        ref = re.sub(r"[^a-z0-9]+", "-", job["place"].lower()).strip("-")
+        refs = [("ansi.bright_cyan b", "HEAD -> "), ("ansi.bright_green b", "main"), (Y, ", ")] if i == 0 else []
+        refs.append(("ansi.bright_yellow b", f"tag: v{job['since'][-4:]}") if i == len(jobs) - 1 else ("ansi.bright_red b", ref))
+        # "Freelancer @ Freelance" says it twice
+        at = [] if job["title"].lower().startswith(job["place"].lower()) else [("ui.fg", f" @ {job['place']}")]
+        o.append(line(1, row, (G, "* "), (Y, f"commit {sha} ("), *refs, (Y, ")")))
+        o.append(line(1, row + 1, (G, "| "), ("ui.fg_dim", f"Date:   {job['since']}")))
+        o.append(line(1, row + 2, (G, "| "), ("ui.fg_bright b", f"    {job['title']}"), *at))
+        if job["note"]:
+            o.append(line(1, row + 3, (G, "| "), ("ui.fg_dim", f"    {job['note']}")))
+        if i < len(jobs) - 1:
+            o.append(line(1, row + rows - 1, (G, "|")))
+        row += rows
+    o.append(prompt(0, 25, cursor=True))
+    return "git log --graph career", (0, 1), "".join(frame), "".join(o)
 
 
-def win_links(s):
-    split = 68
-    frame = [hline(0, split - 1, 0, True, "1 links"), vline(split, 0, 26), hline(split + 1, COLS - 1, 0, False, "2 cowsay")]
-    o = []
-    # bat: grid = ui.border, line numbers = ui.fg_muted (the Helix port's ui.linenr)
-    G, bar = "ui.border", "─" * 7
-    T.pairs.add(("ui.border", "ui.bg"))
-    o.append(line(1, 3, (G, bar + "┬" + "─" * (split - 10))))
-    o.append(line(1, 4, (G, " " * 7 + "│ "), ("ui.fg", "File: "), ("ui.fg_bright b", "~/.config/links.toml")))
-    o.append(line(1, 5, (G, bar + "┼" + "─" * (split - 10))))
-    P = ("syntax.punctuation", ", ")
-    toml = [
-        [("syntax.comment", "# clickable versions live in the badges below")],
-        toml_table("work"),
-        toml_kv("github", 8, toml_str(f"github.com/{USER}")),
-        toml_kv("linkedin", 8, toml_str("linkedin.com/in/rogerioqjunior")),
-        toml_kv("kaggle", 8, toml_str("kaggle.com/maskara31")),
-        toml_kv("company", 8, toml_str("linkedin.com/company/csu-digital")),
-        [],
-        toml_table("gaming"),
-        toml_kv("steam", 8, toml_str("steamcommunity.com/id/melvindoooo")),
-        toml_kv("retro", 8, toml_str("retroachievements.org/user/Doggy31")),
-        [],
-        toml_table("projects"),
-        toml_kv("sp_night", 8, toml_str("sp-night.github.io")),
-        [],
-        toml_table("status"),
-        toml_kv("location", 8, toml_str(s["location"])),
-        toml_kv("talk_to", 8, ("syntax.punctuation", "["), toml_str("ai tools"), P, toml_str("backend"), P,
-                toml_str("linux"), P, toml_str("retro games"), ("syntax.punctuation", "]")),
-    ]
-    for i, segs in enumerate(toml):
-        o.append(line(1, 6 + i, ("ui.fg_muted", f"{i + 1:>4}   "), (G, "│ "), *segs))
-    o.append(line(1, 6 + len(toml), (G, bar + "┴" + "─" * (split - 10))))
-    o.append(prompt(1, 25, cursor=True))
-
-    c = split + 2
-    msg = "links are clickable below ↓"
-    o.append(prompt(c, 1, 'cowsay "say hi"'))
-    cow = [" " + "_" * (len(msg) + 2), f"< {msg} >", " " + "-" * (len(msg) + 2),
-           "        \\   ^__^", "         \\  (oo)\\_______", "            (__)\\       )\\/\\",
-           "                ||----w |", "                ||     ||"]
-    for i, t in enumerate(cow):
-        o.append(line(c, 3 + i, ("ui.fg", t)))
-    return "bat ~/.config/links.toml", (1, 1), "".join(frame), "".join(o)
-
-
-def header(s, today):
-    windows = [("fastfetch", win_fastfetch), ("stack", win_stack), ("about", win_about), ("links", win_links)]
-    n, slot, type_s, pause_s = len(windows), 7.0, 1.1, 0.35
-    total = n * slot
-    pct = lambda t: f"{100 * t / total:.3f}%"
-    css, body = [], []
-    for i, (_, build) in enumerate(windows):
-        a, b = i * slot, (i + 1) * slot
-        typed, (cc, cr), frame, out = build(s)
-        tw = len(typed) * CW
-        css.append(
-            f"@keyframes win{i}{{0%{{opacity:{1 if i == 0 else 0}}}{'' if i == 0 else pct(a) + '{opacity:1}'}{pct(b)}{{opacity:0}}100%{{opacity:0}}}}"
-            f".win{i}{{animation:win{i} {total}s step-end infinite}}"
-            f"@keyframes typ{i}{{0%,{pct(a)}{{transform:translateX(0);opacity:1;animation-timing-function:steps({len(typed)},end)}}"
-            f"{pct(a + type_s)}{{transform:translateX({f(tw)}px);opacity:1;animation-timing-function:step-end}}"
-            f"{pct(a + type_s + pause_s)},100%{{transform:translateX({f(tw)}px);opacity:0}}}}"
-            f".typ{i}{{animation:typ{i} {total}s linear infinite}}"
-            f"@keyframes out{i}{{0%{{opacity:0}}{pct(a + type_s + pause_s)},100%{{opacity:1}}}}"
-            f".out{i}{{animation:out{i} {total}s step-end infinite}}"
-        )
-        cover_x, top = x(cc + 4), PY + cr * LH
-        body.append(
-            f'<g class="win{i}">{frame}{prompt(cc, cr, typed)}'
-            f'<g class="typ{i}"><rect x="{f(cover_x)}" y="{f(top)}" width="{f(tw + CW)}" height="{LH}" fill="{T.hex("ui.bg")}"/>'
-            f'<rect x="{f(cover_x)}" y="{f(top + 2)}" width="{CW}" height="{LH - 4}" fill="{T.hex("ui.cursor")}"/></g>'
-            f'<g class="out{i}">{out}</g></g>'
-        )
-    css.append(
-        "@media (prefers-reduced-motion:reduce){[class^=win],[class^=typ],[class^=out]{animation:none!important}"
-        "[class^=win]{opacity:0}.win0,[class^=out]{opacity:1}[class^=typ]{opacity:0}}"
-    )
-    body.append(status_bar(27, [name for name, _ in windows], status_right(today), animated=True))
-    height = round(PY + 27 * LH + 2 + LH + 4 + PY)
-    return svg(height, "".join(css), "".join(body),
-               "rogerio@archlinux — tmux session with fastfetch, stack, about and links windows")
-
-
-# ── projects.svg: what I build and maintain ──────────────────────────────────
-FUTURE = {  # toilet's "future" font, redrawn: 3 rows of heavy box drawing per letter
-    "a": ("┏━┓", "┣━┫", "╹ ╹"), "b": ("┏┓ ", "┣┻┓", "┗━┛"), "c": ("┏━╸", "┃  ", "┗━╸"),
-    "d": ("╺┳┓", " ┃┃", "╺┻┛"), "e": ("┏━╸", "┣╸ ", "┗━╸"), "f": ("┏━╸", "┣╸ ", "╹  "),
-    "g": ("┏━╸", "┃╺┓", "┗━┛"), "h": ("╻ ╻", "┣━┫", "╹ ╹"), "i": ("╻", "┃", "╹"),
-    "j": ("  ╻", "  ┃", "┗━┛"), "k": ("╻┏ ", "┣┻┓", "╹ ╹"), "l": ("╻  ", "┃  ", "┗━╸"),
-    "m": ("┏┳┓", "┃┃┃", "╹ ╹"), "n": ("┏┓╻", "┃┗┫", "╹ ╹"), "o": ("┏━┓", "┃ ┃", "┗━┛"),
-    "p": ("┏━┓", "┣━┛", "╹  "), "q": ("┏━┓", "┃┓┃", "┗┻┛"), "r": ("┏━┓", "┣┳┛", "╹┗╸"),
-    "s": ("┏━┓", "┗━┓", "┗━┛"), "t": ("╺┳╸", " ┃ ", " ╹ "), "u": ("╻ ╻", "┃ ┃", "┗━┛"),
-    "v": ("╻ ╻", "┃┏┛", "┗┛ "), "w": ("╻ ╻", "┃╻┃", "┗┻┛"), "x": ("╻ ╻", "┏╋┛", "╹ ╹"),
-    "y": ("╻ ╻", "┗┳┛", " ╹ "), "z": ("╺━┓", "┏━┛", "┗━╸"), " ": ("  ", "  ", "  "), "-": ("   ", "╺━╸", "   "),
-}
-
-
-def big(col, row, text, role):
-    """Three-row title. 13px makes the box drawing exactly one 17px row tall, so the strokes join."""
-    rows = ["".join(FUTURE.get(ch, FUTURE[" "])[i] for ch in text.lower()) for i in range(3)]
-    T.pairs.add((role, "ui.bg"))
-    return "".join(f'<text x="{f(x(col))}" y="{f(y(row + i))}" xml:space="preserve" class="{cls(role)} title">'
-                   f"{escape(r)}</text>" for i, r in enumerate(rows)), round(len(rows[0]) * 13 * 0.6 / CW)
-
-
-def chips(col, row, items):
-    """[label] pills. items: (fg role, bg role, label)."""
-    out, cx = [], col
-    for fg, bg, label in items:
-        text = f" {label} "
-        out.append(f'<rect x="{f(x(cx))}" y="{f(PY + row * LH + 1.5)}" width="{f(len(text) * CW)}" height="{LH - 3}" rx="3" fill="{T.hex(bg)}"/>')
-        out.append(line(cx, row, (fg, text), bg=bg))
-        cx += len(text) + 1
-    return "".join(out), cx
-
-
-def wrap(text, width):
-    lines, cur = [], ""
-    for word in text.split():
-        if cur and len(cur) + 1 + len(word) > width:
-            lines.append(cur)
-            cur = word
-        else:
-            cur = f"{cur} {word}".strip()
-    return lines + ([cur] if cur else [])
-
-
-def numbers(col, row, items):
-    segs = []
-    for j, (num, label) in enumerate(items):
-        segs += ([("ui.border", "  │  ")] if j else []) + [("ui.fg_bright b", str(num)), ("ui.fg_dim", " " + label)]
-    return line(col, row, *segs)
-
-
-# A few lines of the SP Night Neovim setup, highlighted with the theme's own syntax roles.
-LUA = [
-    [("syntax.comment", "-- the sodium lamp over the whole city")],
-    [("syntax.keyword", "local "), ("syntax.variable", "palette "), ("syntax.operator", "= "), ("syntax.function", "require"),
-     ("syntax.punctuation", "("), ("syntax.string", '"sp_night.palette"'), ("syntax.punctuation", ")")],
-    [("syntax.keyword", "function "), ("syntax.namespace", "M"), ("syntax.punctuation", "."), ("syntax.function", "setup"),
-     ("syntax.punctuation", "("), ("syntax.parameter", "opts"), ("syntax.punctuation", ")")],
-    [("syntax.conditional", "  if "), ("syntax.variable", "vim"), ("syntax.punctuation", "."), ("syntax.property", "o"),
-     ("syntax.punctuation", "."), ("syntax.property", "background "), ("syntax.operator", "~= "),
-     ("syntax.string", '"dark" '), ("syntax.conditional", "then")],
-    [("syntax.keyword", "    return "), ("syntax.constant", "nil"), ("syntax.punctuation", ", "),
-     ("syntax.string", '"dark only, by decision"')],
-    [("syntax.conditional", "  end")],
-    [("syntax.keyword", "end")],
-]
-
-
-def card_live(c, c0, width, today):
-    o, row = [], 3
-    title, tw = big(c0 + 1, row, c["title"], "ui.accent")
-    o.append(title)
-    side = c0 + tw + 4
-    s, _ = chips(side, row, [("ui.accent b", "ui.selection", c["role"])])
-    o.append(s)
-    o.append(line(side, row + 1, ("diagnostic.ok", "● "), ("ui.fg", "live"), ("ui.fg_dim", f" · updated {ago(c['pushed'], today)}")))
-    s, _ = chips(side, row + 2, [(LANG_ROLE.get(n.lower(), "ui.fg"), "ui.selection", n.lower()) for n in c["langs"]])
-    o.append(s)
-    row += 4
-    for t in wrap(c["desc"], width - 2):
-        o.append(line(c0 + 1, row, ("ui.fg", t)))
-        row += 1
-    row += 1
-    if c.get("theme"):
-        g = T.palette["groups"]
-        o.append(numbers(c0 + 1, row, [(len(T.palette["flavors"]), "flavours"), (len(T.colors), "colours"),
-                                       (audit_pairs_per_flavor(), "pairs gated"), (len(c["ports"]), "ports")]))
-        row += 2
-        # the editor, on ui.panel with ui.linenr gutter, as the Helix port draws it
-        top, h = PY + row * LH, len(LUA) * LH + 6
-        o.append(f'<rect x="{f(x(c0 + 1))}" y="{f(top)}" width="{f((width - 2) * CW)}" height="{h}" rx="4" fill="{T.hex("ui.panel")}"/>')
-        for i, segs in enumerate(LUA):
-            o.append(line(c0 + 2, row + i, ("ui.fg_muted", f"{i + 1:>2} "), *segs, bg="ui.panel").replace(
-                f'y="{f(y(row + i))}"', f'y="{f(y(row + i) + 3)}"', 1))
-        row += len(LUA) + 1
-        # the palette as one strip: every accent, then its bright pair
-        keys = g["accents"]["keys"] + g["vivo"]["keys"]
-        seg = (width - 2) * CW / len(keys)
-        for k, key in enumerate(keys):
-            o.append(f'<rect x="{f(x(c0 + 1) + k * seg)}" y="{f(PY + row * LH + 4)}" width="{f(seg + 0.3)}" height="{LH - 8}" fill="{T.colors[key]}"/>')
-        row += 2
-        s, _ = chips(c0 + 1, row, [("ui.fg", "ui.selection", p) for p in c["ports"]])
-        o.append(s)
-        row += 2
-    else:
-        o.append(numbers(c0 + 1, row, [(c["stars"], "stars"), (c["forks"], "forks")]))
-        row += 2
-        if c["topics"]:
-            s, _ = chips(c0 + 1, row, [("syntax.type", "ui.selection", t) for t in c["topics"][:5]])
-            o.append(s)
-            row += 2
-    o.append(line(c0 + 1, row, ("ui.fg_dim", "↗ "), ("ui.link", c["url"].removeprefix("https://"))))
-    return "".join(o), row
-
-
-def card_soon(c, c0, width):
-    o, row = [], 3
-    title, tw = big(c0 + 1, row, c["title"], "ui.fg_muted")   # the lamp is not lit yet
-    o.append(title)
-    row += 4
-    s, _ = chips(c0 + 1, row, [("ui.accent b", "ui.selection", c["role"]), ("diagnostic.warn b", "ui.selection", "going public soon")])
-    o.append(s)
-    row += 2
-    o.append(line(c0 + 1, row, ("ui.fg_dim", "README.md")))
-    row += 1
-    for i, widths in enumerate([(9, 22, 14), (31, 12), (), (18, 25), (27, 8, 11), (14,), (), (22, 16)]):
-        cx = c0 + 1
-        for wlen in widths:   # blurred text: blocks, not glyphs, so nothing about the repo is shown
-            o.append(f'<rect x="{f(x(cx))}" y="{f(PY + (row + i) * LH + 5)}" width="{f(wlen * CW)}" height="{LH - 10}" rx="3" fill="{T.hex("ui.border")}"/>')
-            cx += wlen + 1
-    row += 9
-    o.append(line(c0 + 1, row, ("ui.fg_dim", "this pane lights up on the first render")))
-    row += 1
-    o.append(line(c0 + 1, row, ("ui.fg_dim", "after "), ("ui.fg", c["repo"]), ("ui.fg_dim", " opens")))
-    return "".join(o), row
-
-
-def projects_svg(cards, others, today):
-    split = 60
-    body, bottoms = [], []
-    for i, c in enumerate(cards[:2]):
-        c0, width = (0, split) if i == 0 else (split + 1, COLS - split - 1)
-        body.append(hline(c0, c0 + width - 1, 0, i == 0, f"{i + 1} {c['title'].lower().replace(' ', '-')}"))
-        cmd = f"gh repo view {c['repo']}"
-        body.append(prompt(c0 + 1, 1, cmd))
-        part, bottom = card_live(c, c0 + 1, width - 2, today) if c["live"] else card_soon(c, c0 + 1, width - 2)
-        body.append(part)
-        bottoms.append(bottom)
-    last = max(bottoms) + 1
-    body.append(vline(split, 0, last))
-    row = last + 1
-    if others:
-        body.append(hline(0, COLS - 1, row, False))
-        row += 1
-        body.append(line(1, row, ("syntax.comment", "# earlier experiments: "), ("ui.fg_dim", "  ·  ".join(others))))
-        row += 1
-    live = sum(c["live"] for c in cards)
-    body.append(status_bar(row, ["projects"], status_right(today, (f" {live} live · {len(cards) - live} soon ", "ui.fg_dim", "ui.panel")),
-                           animated=False))
-    height = round(PY + row * LH + 2 + LH + 4 + PY)
-    return svg(height, ".title{font-size:13px;font-weight:700}", "".join(body),
-               "Projects I created and maintain: " + ", ".join(c["title"] for c in cards))
-
-
-def readme_links(cards):
-    """Clickable links for the live projects, between the projects markers in README.md."""
-    badges = [f'  <a href="{c["url"]}"><img src="https://img.shields.io/badge/{c["title"].replace(" ", "_").replace("-", "--")}'
-              f'-creator_%26_maintainer-{T.hex("ui.accent")[1:]}?style=flat-square&labelColor={T.hex("ui.bg")[1:]}" '
-              f'alt="{escape(c["title"])}"/></a>' for c in cards if c["live"]]
-    readme = ROOT / "README.md"
-    text = readme.read_text()
-    block = "<!-- projects:start -->\n<p align=\"center\">\n" + "\n".join(badges) + "\n</p>\n<!-- projects:end -->"
-    new = re.sub(r"<!-- projects:start -->.*?<!-- projects:end -->", lambda _: block, text, flags=re.S)
-    if new != text:
-        readme.write_text(new)
-
-
-# ── activity.svg: contribution graph ─────────────────────────────────────────
 def level(count, peak):
     if not count:
         return 0
     return min(4, 1 + int(3 * count / max(peak, 1) + 0.5)) if peak > 3 else min(4, count)
 
 
-def activity(s, today):
+def win_now(s, site):
+    """This year's contributions, then what shipped lately on the site. The only window with numbers."""
     # a contribution is an addition: git.added, stepped up from the background with the contract's `mix`
     levels = [T.hex("ui.line")] + [T.mix(t, "ui.bg", "git.added") for t in (0.3, 0.55, 0.8, 1)]
-    o = [hline(0, COLS - 1, 0, True, "0 gh-dash"), prompt(0, 1, f"gh contribs {USER} --since 1y")]
-    weeks = s["weeks"]
+    frame = [hline(0, COLS - 1, 0, True, "1 gh-dash"), hline(0, COLS - 1, 17, False, "2 site")]
+    o, weeks = [], s["weeks"]
     peak = max(d["contributionCount"] for w in weeks for d in w["contributionDays"])
     cell, gap = 11.2, 2.8
     gx0, gy0 = x(5), PY + 4 * LH + 2
@@ -892,12 +566,6 @@ def activity(s, today):
                      f'<title>{d["date"]}: {d["contributionCount"]}</title></rect>')
     for wd, name in ((1, "Mon"), (3, "Wed"), (5, "Fri")):
         o.append(f'<text x="{f(x(1))}" y="{f(gy0 + wd * (cell + gap) + cell - 1.5)}" class="ui-fg_dim">{name}</text>')
-    lx = gx0 + len(weeks) * (cell + gap) - 5 * (cell + gap) - 5 * CW
-    ly = gy0 + 7 * (cell + gap) + 4
-    o.append(f'<text x="{f(lx - 5 * CW)}" y="{f(ly + cell - 1.5)}" class="ui-fg_dim">Less</text>')
-    for i, c in enumerate(levels):
-        o.append(f'<rect x="{f(lx + i * (cell + gap))}" y="{f(ly)}" width="{cell}" height="{cell}" rx="2" fill="{c}"/>')
-    o.append(f'<text x="{f(lx + 5 * (cell + gap) + 2)}" y="{f(ly + cell - 1.5)}" class="ui-fg_dim">More</text>')
 
     best = s["best"]
     stat_rows = [
@@ -913,29 +581,179 @@ def activity(s, today):
             if j:
                 segs.append(("ui.border", "  │  "))
             segs += [("ui.fg_dim", k + " "), ("ui.fg_bright b", v)]
-        o.append(line(1, 12 + r, *segs))
-    o.append(prompt(0, 15, cursor=True))
-    o.append(status_bar(16, ["activity"], status_right(today, (f" repos {s['repos']} ", "ui.fg_dim", "ui.panel")),
-                        animated=False))
-    height = round(PY + 16 * LH + 2 + LH + 4 + PY)
-    return svg(height, "", "".join(o), f"{s['total']} contributions in the last year")
+        o.append(line(1, 13 + r, *segs))
+
+    o.append(prompt(0, 18, f"curl -s {SITE_FEED.removeprefix('https://')} | rss --latest 3"))
+    room = COLS - 34
+    for i, p in enumerate(site["projects"][:3]):
+        desc = p["desc"].split(":")[0].rstrip(".")
+        if len(desc) > room:
+            desc = desc[:room - 3].rsplit(" ", 1)[0] + "..."
+        o.append(line(1, 19 + i, ("ui.accent b", "● "), ("ui.fg_dim", p["date"].strftime("%d %b %Y") + "  "),
+                      ("syntax.keyword b", f"{p['title']:<13}"), ("ui.fg", desc)))
+    o.append(line(1, 23, ("ui.fg_dim", "↗ "), ("ui.link", SITE.removeprefix("https://")),
+                  ("ui.fg_dim", "  projects, docs and resume live there")))
+    o.append(prompt(0, 25, cursor=True))
+    return f"gh contribs {USER} --since 1y", (0, 1), "".join(frame), "".join(o)
+
+
+# name, builder, what tmux's display-message says when this window is next
+WINDOWS = [
+    ("whoami", win_whoami, "who I am and what I run"),
+    ("stack", win_stack, "what I build with"),
+    ("career", win_career, "where I have worked"),
+    ("now", win_now, "this year's commits and what I shipped"),
+]
+SLOT, TYPE_S, PAUSE_S, REVEAL_S, MSG_S = 8.0, 1.0, 0.25, 0.9, 1.7
+
+
+def header(s, site, today):
+    """Each window types its command, prints its output one row per step, fills a progress line
+    under its tab, and hands over with a display-message naming the next window."""
+    n = len(WINDOWS)
+    total = n * SLOT
+    pct = lambda t: f"{100 * t / total:.3f}%"
+    pane_top, pane_rows = PY + 2 * LH, 24
+    bg = T.hex("ui.bg")
+    css, body = [], []
+    for i, (_, build, _) in enumerate(WINDOWS):
+        a, b = i * SLOT, (i + 1) * SLOT
+        typed, (cc, cr), frame, out = build(s, site)
+        tw = len(typed) * CW
+        t0 = a + TYPE_S + PAUSE_S
+        css.append(
+            f"@keyframes win{i}{{0%{{opacity:{1 if i == 0 else 0}}}{'' if i == 0 else pct(a) + '{opacity:1}'}{pct(b)}{{opacity:0}}100%{{opacity:0}}}}"
+            f".win{i}{{animation:win{i} {total}s step-end infinite}}"
+            f"@keyframes typ{i}{{0%,{pct(a)}{{transform:translateX(0);opacity:1;animation-timing-function:steps({len(typed)},end)}}"
+            f"{pct(a + TYPE_S)}{{transform:translateX({f(tw)}px);opacity:1;animation-timing-function:step-end}}"
+            f"{pct(t0)},100%{{transform:translateX({f(tw)}px);opacity:0}}}}"
+            f".typ{i}{{animation:typ{i} {total}s linear infinite}}"
+            f"@keyframes cov{i}{{0%,{pct(t0)}{{transform:translateY(0);animation-timing-function:steps({pane_rows},end)}}"
+            f"{pct(t0 + REVEAL_S)},100%{{transform:translateY({pane_rows * LH}px)}}}}"
+            f".cov{i}{{animation:cov{i} {total}s linear infinite}}"
+            f"@keyframes prg{i}{{0%,{pct(a)}{{transform:scaleX(0)}}{pct(b)},100%{{transform:scaleX(1)}}}}"
+            f".prg{i}{{transform-box:fill-box;transform-origin:left;animation:prg{i} {total}s linear infinite}}"
+            f"@keyframes msg{i}{{0%{{opacity:0}}{pct(b - MSG_S)}{{opacity:1}}{'' if b >= total else pct(b) + '{opacity:0}'}}}"
+            f".msg{i}{{animation:msg{i} {total}s step-end infinite}}"
+        )
+        cover_x, top = x(cc + 4), PY + cr * LH
+        # the output sits under a background-coloured cover that steps down one row at a time;
+        # the nested <svg> clips it to the pane so it never covers the status bar
+        body.append(
+            f'<g class="win{i}"><g>{out}</g>'
+            f'<svg x="0" y="{f(pane_top)}" width="{W}" height="{pane_rows * LH}" overflow="hidden">'
+            f'<rect class="cov{i}" width="{W}" height="{pane_rows * LH}" fill="{bg}"/></svg>'
+            f'{frame}{prompt(cc, cr, typed)}'
+            f'<g class="typ{i}"><rect x="{f(cover_x)}" y="{f(top)}" width="{f(tw + CW)}" height="{LH}" fill="{bg}"/>'
+            f'<rect x="{f(cover_x)}" y="{f(top + 2)}" width="{CW}" height="{LH - 4}" fill="{T.hex("ui.cursor")}"/></g></g>'
+        )
+    css.append(
+        "@media (prefers-reduced-motion:reduce){[class^=win],[class^=typ],[class^=cov],[class^=prg],[class^=msg]{animation:none!important}"
+        "[class^=win],[class^=msg]{opacity:0}.win0{opacity:1}[class^=typ],[class^=cov]{display:none}}"
+    )
+
+    row = 27
+    names = [name for name, _, _ in WINDOWS]
+    body.append(status_bar(row, names, status_right(today), animated=True))
+    # progress under the active tab, laid out exactly like status_bar lays out the tabs
+    stop = PY + row * LH + 2
+    cx = PX + len(" rogerio ") * CW + CW
+    for i, name in enumerate(names):
+        body.append(f'<g class="win{i}"><rect class="prg{i}" x="{f(cx)}" y="{f(stop + LH + 1)}" '
+                    f'width="{f(len(f" {i}:{name}* ") * CW)}" height="2" fill="{T.hex("ui.accent")}"/></g>')
+        cx += (len(f" {i}:{name} ") + 2) * CW
+    # tmux's display-message: message-style is yellow (ui.match) and takes over the whole status line
+    on_msg = T.readable("ui.on_accent", "ui.fg_bright", "ui.match")
+    T.pairs.add((on_msg, "ui.match"))
+    for i in range(n):
+        j = (i + 1) % n
+        key, rest = " C-b n ", f" ❯  {j}:{names[j]}  ·  {WINDOWS[j][2]}"
+        body.append(f'<g class="msg{i}"><rect x="0" y="{f(stop)}" width="{W}" height="{LH + 4 + PY}" fill="{T.hex("ui.match")}"/>'
+                    f'<text x="{f(PX)}" y="{f(stop + (LH + 4) / 2 + 4.3)}" xml:space="preserve" class="{cls(on_msg)}">'
+                    f'<tspan class="b">{escape(key)}</tspan>{escape(rest)}</text></g>')
+    height = round(PY + row * LH + 2 + LH + 4 + PY)
+    return svg(height, "".join(css), "".join(body),
+               "rogerio@archlinux — tmux tour: whoami, stack, career and now windows")
+
+# ── links: the bar under the header ──────────────────────────────────────────
+# GitHub makes a whole image one link, so the bar is one small SVG per link, set side by
+# side between the links markers in README.md. Each group opens with a coloured block,
+# like a tmux status segment.
+LINK_GROUPS = [
+    ("me", "ui.accent", [("site", SITE), ("about", f"{SITE}/en/about/"), ("resume", f"{SITE}/en/resume/")]),
+    ("talk", "ui.accent_alt", [("linkedin", "https://www.linkedin.com/in/rogerioqjunior/"),
+                               ("email", "mailto:rogerio.junior20@outlook.com"),
+                               ("kaggle", "https://www.kaggle.com/maskara31")]),
+    ("play", "ui.match", [("steam", "https://steamcommunity.com/id/melvindoooo/"),
+                          ("retro", "https://retroachievements.org/user/Doggy31")]),
+]
+LINK_H = LH + 10
+
+
+def link_svg(label, fg, bg, edge="", bold=False):
+    """One slice of the bar. edge 'l'/'r' rounds that outer end; joints stay square so slices meet."""
+    w = round((len(label) + 3) * CW)
+    T.pairs.add((fg, bg))
+    panel, r = T.hex("ui.panel"), 6
+    shape = f'<rect width="{w}" height="{LINK_H}" fill="{panel}"/>'
+    if edge:
+        shape = (f'<rect width="{w}" height="{LINK_H}" rx="{r}" fill="{panel}"/>'
+                 f'<rect x="{0 if edge == "r" else w - r}" width="{r}" height="{LINK_H}" fill="{panel}"/>')
+    block = "" if bg == "ui.panel" else \
+        f'<rect x="{f(CW / 2)}" y="4" width="{f(w - CW)}" height="{LINK_H - 8}" rx="2" fill="{T.hex(bg)}"/>'
+    weight = 700 if bold else 400
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {LINK_H}" width="{w}" height="{LINK_H}" role="img">'
+            f"<title>{escape(label)}</title>"
+            f"<style>{font_face((weight,))}text{{font-family:JBM,'JetBrains Mono',ui-monospace,monospace;font-size:{FS}px;"
+            f"font-weight:{weight};fill:{T.hex(fg)}}}</style>"
+            f'{shape}{block}<text x="{f(1.5 * CW)}" y="{f(LINK_H / 2 + 4.3)}" xml:space="preserve">{escape(label)}</text></svg>\n')
+
+
+def links():
+    """{path: svg} for every slice, and the README block that sets them side by side (no whitespace
+    between images, or GitHub leaves gaps)."""
+    files, html = {}, []
+    for gi, (label, role, items) in enumerate(LINK_GROUPS):
+        on = T.readable("ui.on_accent", "ui.fg_bright", role)
+        path = f"links/{label}.svg"
+        files[path] = link_svg(label, on, role, "l" if gi == 0 else "", bold=True)
+        html.append(f'<img src="{path}" alt="{label}:"/>')
+        for li, (name, url) in enumerate(items):
+            last = gi == len(LINK_GROUPS) - 1 and li == len(items) - 1
+            path = f"links/{name}.svg"
+            files[path] = link_svg(name, "ui.fg", "ui.panel", "r" if last else "")
+            html.append(f'<a href="{url}"><img src="{path}" alt="{name}"/></a>')
+    return files, "".join(html)
+
+
+def readme_links(html):
+    readme = ROOT / "README.md"
+    text = readme.read_text()
+    block = f'<!-- links:start -->\n<p align="center">\n  {html}\n</p>\n<!-- links:end -->'
+    new = re.sub(r"<!-- links:start -->.*?<!-- links:end -->", lambda _: block, text, flags=re.S)
+    if new == text and "<!-- links:start -->" not in text:
+        sys.exit("README.md has no links markers")
+    if new != text:
+        readme.write_text(new)
 
 
 def main():
     global T
     T = Theme()
     today = dt.datetime.now(dt.timezone.utc).date()
-    data = fetch()
-    s = stats(data["user"], today)
-    cards, others = featured(data)
-    out = {"header.svg": header(s, today), "projects.svg": projects_svg(cards, others, today),
-           "activity.svg": activity(s, today)}
+    s = stats(fetch()["user"], today)
+    site = {"projects": site_projects(), "career": career()}
+    out = {"header.svg": header(s, site, today)}
+    files, html = links()
+    out.update(files)
     if not audit(out.values()):
         sys.exit("SP Night audit failed; nothing written")
+    (ROOT / "links").mkdir(exist_ok=True)
     for name, content in out.items():
         (ROOT / name).write_text(content)
-    readme_links(cards)
-    print(f"ok: {s['total']} contributions, streak {s['current']}d, uptime {s['years']}y{s['months']}m")
+    readme_links(html)
+    print(f"ok: {s['total']} contributions, streak {s['current']}d, {len(site['projects'])} projects, "
+          f"{len(site['career'])} jobs from the site")
 
 
 if __name__ == "__main__":
